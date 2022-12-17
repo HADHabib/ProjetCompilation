@@ -104,7 +104,7 @@ State 7:
 ## Known stack suffix:
 ## PLUS
 ## LR(1) items:
-expr -> PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -123,7 +123,7 @@ State 8:
 ## Known stack suffix:
 ## NOT
 ## LR(1) items:
-expr -> NOT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NOT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -142,7 +142,7 @@ State 9:
 ## Known stack suffix:
 ## NEW
 ## LR(1) items:
-expr -> NEW . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NEW . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On ID shift to state 10
 ## Reductions:
@@ -151,7 +151,7 @@ State 10:
 ## Known stack suffix:
 ## NEW ID
 ## LR(1) items:
-expr -> NEW ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NEW ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On LPAREN shift to state 11
 ## Reductions:
@@ -160,7 +160,7 @@ State 11:
 ## Known stack suffix:
 ## NEW ID LPAREN
 ## LR(1) items:
-expr -> NEW ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NEW ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -172,9 +172,9 @@ expr -> NEW ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TI
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 21
+-- On separated_nonempty_list(COMMA,expr) shift to state 24
 -- On loption(separated_nonempty_list(COMMA,expr)) shift to state 47
--- On expr shift to state 24
+-- On expr shift to state 27
 ## Reductions:
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
@@ -183,7 +183,7 @@ State 12:
 ## Known stack suffix:
 ## MINUS
 ## LR(1) items:
-expr -> MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -202,7 +202,7 @@ State 13:
 ## Known stack suffix:
 ## LPAREN
 ## LR(1) items:
-expr -> LPAREN . expr RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> LPAREN . expr RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -214,7 +214,7 @@ expr -> LPAREN . expr RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 44
+-- On expr shift to state 18
 ## Reductions:
 
 State 14:
@@ -251,37 +251,101 @@ State 17:
 ## Known stack suffix:
 ## value
 ## LR(1) items:
-expr -> value . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-value -> value . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> value . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On DOT shift to state 18
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
 --   reduce production expr -> value
 
 State 18:
 ## Known stack suffix:
-## value DOT
+## LPAREN expr
 ## LR(1) items:
-value -> value DOT . valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
+expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> LPAREN expr . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+value -> expr . DOT valueNxt [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 ## Transitions:
--- On ID shift to state 19
--- On valueNxt shift to state 43
+-- On TIMES shift to state 19
+-- On RPAREN shift to state 45
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 
 State 19:
+## Known stack suffix:
+## expr TIMES
+## LR(1) items:
+expr -> expr TIMES . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+## Transitions:
+-- On STRING shift to state 4
+-- On PLUS shift to state 7
+-- On NOT shift to state 8
+-- On NEW shift to state 9
+-- On MINUS shift to state 12
+-- On LPAREN shift to state 13
+-- On ID shift to state 14
+-- On CSTE shift to state 15
+-- On valueFst shift to state 16
+-- On value shift to state 17
+-- On expr shift to state 20
+## Reductions:
+
+State 20:
+## Known stack suffix:
+## expr TIMES expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr TIMES expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+## Transitions:
+-- On DOT shift to state 21
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
+--   reduce production expr -> expr TIMES expr
+
+State 21:
+## Known stack suffix:
+## expr DOT
+## LR(1) items:
+value -> expr DOT . valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
+## Transitions:
+-- On ID shift to state 22
+-- On valueNxt shift to state 44
+## Reductions:
+
+State 22:
 ## Known stack suffix:
 ## ID
 ## LR(1) items:
 valueNxt -> ID . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
 valueNxt -> ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
 ## Transitions:
--- On LPAREN shift to state 20
+-- On LPAREN shift to state 23
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
 --   reduce production valueNxt -> ID
 
-State 20:
+State 23:
 ## Known stack suffix:
 ## ID LPAREN
 ## LR(1) items:
@@ -297,14 +361,14 @@ valueNxt -> ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TI
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 21
--- On loption(separated_nonempty_list(COMMA,expr)) shift to state 22
--- On expr shift to state 24
+-- On separated_nonempty_list(COMMA,expr) shift to state 24
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 25
+-- On expr shift to state 27
 ## Reductions:
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
-State 21:
+State 24:
 ## Known stack suffix:
 ## separated_nonempty_list(COMMA,expr)
 ## LR(1) items:
@@ -314,16 +378,16 @@ loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,ex
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,expr)
 
-State 22:
+State 25:
 ## Known stack suffix:
 ## ID LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
 valueNxt -> ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
 ## Transitions:
--- On RPAREN shift to state 23
+-- On RPAREN shift to state 26
 ## Reductions:
 
-State 23:
+State 26:
 ## Known stack suffix:
 ## ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
@@ -333,76 +397,41 @@ valueNxt -> ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TI
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
 --   reduce production valueNxt -> ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
-State 24:
+State 27:
 ## Known stack suffix:
 ## expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
 separated_nonempty_list(COMMA,expr) -> expr . [ RPAREN ]
 separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAREN ]
+value -> expr . DOT valueNxt [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On COMMA shift to state 41
--- On AND shift to state 39
+-- On TIMES shift to state 19
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On COMMA shift to state 42
+-- On AND shift to state 40
 ## Reductions:
 -- On RPAREN
 --   reduce production separated_nonempty_list(COMMA,expr) -> expr
 
-State 25:
-## Known stack suffix:
-## expr TIMES
-## LR(1) items:
-expr -> expr TIMES . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 26
-## Reductions:
-
-State 26:
-## Known stack suffix:
-## expr TIMES expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr TIMES expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> expr TIMES expr
-
-State 27:
+State 28:
 ## Known stack suffix:
 ## expr RELOP
 ## LR(1) items:
-expr -> expr RELOP . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr RELOP . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -414,37 +443,39 @@ expr -> expr RELOP . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MI
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 28
+-- On expr shift to state 29
 ## Reductions:
 
-State 28:
+State 29:
 ## Known stack suffix:
 ## expr RELOP expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr RELOP expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr RELOP expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On PLUS shift to state 29
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
+-- On TIMES shift to state 19
+-- On PLUS shift to state 30
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RELOP RCBRACE OR DEF COMMA AND
 --   reduce production expr -> expr RELOP expr
 
-State 29:
+State 30:
 ## Known stack suffix:
 ## expr PLUS
 ## LR(1) items:
-expr -> expr PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -456,34 +487,36 @@ expr -> expr PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MIN
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 30
+-- On expr shift to state 31
 ## Reductions:
 
-State 30:
+State 31:
 ## Known stack suffix:
 ## expr PLUS expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On DIV shift to state 31
+-- On TIMES shift to state 19
+-- On DOT shift to state 21
+-- On DIV shift to state 32
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DEF CONCAT COMMA AND
 --   reduce production expr -> expr PLUS expr
 
-State 31:
+State 32:
 ## Known stack suffix:
 ## expr DIV
 ## LR(1) items:
-expr -> expr DIV . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr DIV . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -495,32 +528,34 @@ expr -> expr DIV . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINU
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 32
+-- On expr shift to state 33
 ## Reductions:
 
-State 32:
+State 33:
 ## Known stack suffix:
 ## expr DIV expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr DIV expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr DIV expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
+-- On DOT shift to state 21
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
 --   reduce production expr -> expr DIV expr
 
-State 33:
+State 34:
 ## Known stack suffix:
 ## expr MINUS
 ## LR(1) items:
-expr -> expr MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -532,34 +567,36 @@ expr -> expr MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MI
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 34
+-- On expr shift to state 35
 ## Reductions:
 
-State 34:
+State 35:
 ## Known stack suffix:
 ## expr MINUS expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On DIV shift to state 31
+-- On TIMES shift to state 19
+-- On DOT shift to state 21
+-- On DIV shift to state 32
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DEF CONCAT COMMA AND
 --   reduce production expr -> expr MINUS expr
 
-State 35:
+State 36:
 ## Known stack suffix:
 ## expr CONCAT
 ## LR(1) items:
-expr -> expr CONCAT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr CONCAT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -571,36 +608,38 @@ expr -> expr CONCAT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR M
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 36
+-- On expr shift to state 37
 ## Reductions:
 
-State 36:
+State 37:
 ## Known stack suffix:
 ## expr CONCAT expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr CONCAT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr CONCAT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On PLUS shift to state 29
--- On MINUS shift to state 33
--- On DIV shift to state 31
+-- On TIMES shift to state 19
+-- On PLUS shift to state 30
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RELOP RCBRACE OR DEF CONCAT COMMA AND
 --   reduce production expr -> expr CONCAT expr
 
-State 37:
+State 38:
 ## Known stack suffix:
 ## expr OR
 ## LR(1) items:
-expr -> expr OR . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr OR . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -612,39 +651,41 @@ expr -> expr OR . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 38
+-- On expr shift to state 39
 ## Reductions:
 
-State 38:
+State 39:
 ## Known stack suffix:
 ## expr OR expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr OR expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr OR expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
+-- On TIMES shift to state 19
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RCBRACE OR DEF COMMA
 --   reduce production expr -> expr OR expr
 
-State 39:
+State 40:
 ## Known stack suffix:
 ## expr AND
 ## LR(1) items:
-expr -> expr AND . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr AND . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On STRING shift to state 4
 -- On PLUS shift to state 7
@@ -656,34 +697,36 @@ expr -> expr AND . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINU
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On expr shift to state 40
+-- On expr shift to state 41
 ## Reductions:
 
-State 40:
+State 41:
 ## Known stack suffix:
 ## expr AND expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr AND expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr AND expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
+-- On TIMES shift to state 19
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
 ## Reductions:
 -- On THEN SEMICOLON RPAREN RCBRACE OR DEF COMMA AND
 --   reduce production expr -> expr AND expr
 
-State 41:
+State 42:
 ## Known stack suffix:
 ## expr COMMA
 ## LR(1) items:
@@ -699,11 +742,11 @@ separated_nonempty_list(COMMA,expr) -> expr COMMA . separated_nonempty_list(COMM
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 42
--- On expr shift to state 24
+-- On separated_nonempty_list(COMMA,expr) shift to state 43
+-- On expr shift to state 27
 ## Reductions:
 
-State 42:
+State 43:
 ## Known stack suffix:
 ## expr COMMA separated_nonempty_list(COMMA,expr)
 ## LR(1) items:
@@ -713,65 +756,42 @@ separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,
 -- On RPAREN
 --   reduce production separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,expr)
 
-State 43:
+State 44:
 ## Known stack suffix:
-## value DOT valueNxt
+## expr DOT valueNxt
 ## LR(1) items:
-value -> value DOT valueNxt . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
+value -> expr DOT valueNxt . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
 ## Transitions:
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production value -> value DOT valueNxt
-
-State 44:
-## Known stack suffix:
-## LPAREN expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> LPAREN expr . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DIV CONCAT AND ]
-## Transitions:
--- On TIMES shift to state 25
--- On RPAREN shift to state 45
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
-## Reductions:
+--   reduce production value -> expr DOT valueNxt
 
 State 45:
 ## Known stack suffix:
 ## LPAREN expr RPAREN
 ## LR(1) items:
-expr -> LPAREN expr RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> LPAREN expr RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
 --   reduce production expr -> LPAREN expr RPAREN
 
 State 46:
 ## Known stack suffix:
 ## MINUS expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
+-- On DOT shift to state 21
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
 --   reduce production expr -> MINUS expr
@@ -780,7 +800,7 @@ State 47:
 ## Known stack suffix:
 ## NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
-expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 -- On RPAREN shift to state 48
 ## Reductions:
@@ -789,26 +809,28 @@ State 48:
 ## Known stack suffix:
 ## NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
-expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
 --   reduce production expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
 State 49:
 ## Known stack suffix:
 ## NOT expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> NOT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NOT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
+-- On DOT shift to state 21
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
 --   reduce production expr -> NOT expr
@@ -817,16 +839,18 @@ State 50:
 ## Known stack suffix:
 ## PLUS expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr . DOT valueNxt [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
 ## Transitions:
+-- On DOT shift to state 21
 ## Reductions:
 -- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
 --   reduce production expr -> PLUS expr
@@ -854,25 +878,27 @@ State 52:
 ## Known stack suffix:
 ## IF expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES THEN RELOP PLUS OR MINUS DIV CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . MINUS expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . TIMES expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . DIV expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . AND expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . OR expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . RELOP expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . CONCAT expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 instr -> IF expr . THEN instr ELSE instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT valueNxt [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 ## Transitions:
--- On TIMES shift to state 25
+-- On TIMES shift to state 19
 -- On THEN shift to state 53
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 
 State 53:
@@ -903,14 +929,12 @@ State 54:
 ## Known stack suffix:
 ## value
 ## LR(1) items:
-expr -> value . [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
+expr -> value . [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 instr -> value . ASSIGN expr SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
-value -> value . DOT valueNxt [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND ]
 ## Transitions:
--- On DOT shift to state 18
 -- On ASSIGN shift to state 55
 ## Reductions:
--- On TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND
+-- On TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND
 --   reduce production expr -> value
 
 State 55:
@@ -936,25 +960,27 @@ State 56:
 ## Known stack suffix:
 ## value ASSIGN expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 instr -> value ASSIGN expr . SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT valueNxt [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 ## Transitions:
--- On TIMES shift to state 25
+-- On TIMES shift to state 19
 -- On SEMICOLON shift to state 57
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 
 State 57:
@@ -1014,25 +1040,27 @@ State 61:
 ## Known stack suffix:
 ## expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DIV CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
 instr -> expr . SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT valueNxt [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND ]
 ## Transitions:
--- On TIMES shift to state 25
+-- On TIMES shift to state 19
 -- On SEMICOLON shift to state 62
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 
 State 62:
@@ -1595,24 +1623,26 @@ State 111:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . DIV expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . AND expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . OR expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . MINUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . TIMES expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . DIV expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . AND expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . OR expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . RELOP expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . CONCAT expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
 method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr . [ RCBRACE DEF ]
+value -> expr . DOT valueNxt [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
 ## Transitions:
--- On TIMES shift to state 25
--- On RELOP shift to state 27
--- On PLUS shift to state 29
--- On OR shift to state 37
--- On MINUS shift to state 33
--- On DIV shift to state 31
--- On CONCAT shift to state 35
--- On AND shift to state 39
+-- On TIMES shift to state 19
+-- On RELOP shift to state 28
+-- On PLUS shift to state 30
+-- On OR shift to state 38
+-- On MINUS shift to state 34
+-- On DOT shift to state 21
+-- On DIV shift to state 32
+-- On CONCAT shift to state 36
+-- On AND shift to state 40
 ## Reductions:
 -- On RCBRACE DEF
 --   reduce production method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr
@@ -1829,9 +1859,9 @@ extends -> EXTENDS ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAR
 -- On CSTE shift to state 15
 -- On valueFst shift to state 16
 -- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 21
+-- On separated_nonempty_list(COMMA,expr) shift to state 24
 -- On loption(separated_nonempty_list(COMMA,expr)) shift to state 132
--- On expr shift to state 24
+-- On expr shift to state 27
 ## Reductions:
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) ->

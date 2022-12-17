@@ -42,6 +42,8 @@ open Ast
 %left TIMES DIV
 %right NOT UMINUS UPLUS
 
+%left DOT
+
 (* l'axiome est aussi le nom de la fonction a appeler pour faire l'analyse
  * syntaxique
  *)
@@ -90,7 +92,8 @@ valueNxt: i = ID { Id(i) }
         | f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Func(f, args) }
 
 value: v = valueFst { v }
-     | v1 = value DOT v2 = valueNxt { Access(v1, v2) }
+     (*| v1 = value DOT v2 = valueNxt { Access(v1, v2) }*)
+     | e = expr DOT v = valueNxt { Access(e, v) }
 
 
 expr: v = value                       { Val(v) }

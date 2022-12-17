@@ -4,7 +4,7 @@ type opComp =
 type valueType =
   Id of string
 | Func of string * (expType list)
-| Access of valueType * valueType
+| Access of expType * valueType
 | Cste of int
 | Str of string
 and expType =
@@ -62,7 +62,7 @@ let printAST ast =
     match v with
     | Id(s) -> Printf.printf "%s" s
     | Func(n, p) -> Printf.printf "%s(" n; printSeparated p printExpr ", "; Printf.printf ")"
-    | Access(v1, v2) -> printVal v1; Printf.printf "."; printVal v2
+    | Access(e, v) -> printExpr e; Printf.printf "."; printVal v
     | Cste(i) -> Printf.printf "%d" i
     | Str(s) -> Printf.printf "%s" s
   and printExpr e =
