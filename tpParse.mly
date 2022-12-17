@@ -15,9 +15,9 @@ open Ast
 %token AND OR NOT
 %token EOF
 
-%left ELSE
 %left OR
 %left AND
+%left RELOP
 %left PLUS MINUS
 %left TIMES DIV
 %right NOT UMINUS UPLUS
@@ -27,9 +27,14 @@ open Ast
  *)
 %start<Ast.progType> prog
 %%
-prog:  EOF { }
+prog: loption(classOrObject) bloc EOF { }
+
+classOrObject: class 
+             | object
 
 class: CLASS ID LPARENS separated_list(COMMA, param) RPARENS option(extends) option(bloc) IS LCBRACE classIn RCBRACE
+
+object: OBJECT
 
 extends: EXTENDS ID LPARENS separated_list(COMMA, param) RPARENS
 
@@ -53,7 +58,25 @@ instr: expr SEMICOLON
      | lvalue ASSIGN expr SEMICOLON
      | IF expr THEN instr ELSE instr
 
-lvalue: separated_nonempty_list(DOT, ID)
+lvalue: ID
+      | ID LPARENS separated_list(COMMA, expr) RPARENS
+      | lvalue DOT lvalue
 
+rvalue: lvalue
+      | CSTE
+      | STRING
 
-expr:
+expr: rvalue
+    | expr PLUS expr
+    | expr MINUS expr
+    | expr TIMES expr
+    | expr DIV expr
+    | expr RELOP expr
+    | expr AND expr
+    | expr OR expr
+    | NOT expr
+    | MINUS expr %prec UMINUS
+    | PLUS expr %prec UPLUS 
+    | delimited(LPARENS, expr, RPARENS)
+    | expr CONCAT expr
+    [ NEW ID LPARENS separated_list(COMMA, expr) RPARENS
