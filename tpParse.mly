@@ -15,68 +15,95 @@ open Ast
 %token AND OR NOT
 %token EOF
 
+%type <expType> expr
+%type <valueType> value
+%type <valueType> valueFst
+%type <valueType> valueNxt
+%type <instrType> instr
+%type <blocType> bloc
+%type <blocType> blocWDecl
+%type <declType> decl
+%type <paramType> param
+%type <methodType> method_
+%type <fieldType> field
+%type <classInType> classIn
+%type <extendType> extends
+%type <classType> classOrObject
+%type <classType> class_
+%type <classType> object_
+%type <string> retType
+
+
 %left OR
 %left AND
 %left RELOP
+%left CONCAT
 %left PLUS MINUS
 %left TIMES DIV
 %right NOT UMINUS UPLUS
 
-(* l'axiome est aussi le nom de la fonction a appeler pour faire l'analyse 
+(* l'axiome est aussi le nom de la fonction a appeler pour faire l'analyse
  * syntaxique
  *)
 %start<Ast.progType> prog
 %%
-prog: loption(classOrObject) bloc EOF { }
+prog: classes = list(classOrObject) code = bloc EOF { (classes, code) }
 
-classOrObject: class 
-             | object
+classOrObject: c = class_ { c }
+             | o = object_ { o }
 
-class: CLASS ID LPARENS separated_list(COMMA, param) RPARENS option(extends) option(bloc) IS LCBRACE classIn RCBRACE
+class_: CLASS name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) e = option(extends) cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (false, name, params, e, cons, i) }
 
-object: OBJECT
+object_: OBJECT name = ID cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (true, name, [], None, cons, i) }
 
-extends: EXTENDS ID LPARENS separated_list(COMMA, param) RPARENS
+extends: EXTENDS name = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { (name, args) }
 
-classIn: loption(champ) loption(method)
+classIn: f = list(field) m = list(method_) { (f, m) }
 
-champ: VAR boption(AUTO) ID COLON ID SEMICOLON
+field: VAR a = boption(AUTO) name = ID COLON t = ID SEMICOLON { (a, name, t) }
 
-method: DEF boption(OVERRIDE) ID LPARENS separated_list(COMMA, param) RPARENS COLON ID ASSIGN expr
-      | DEF boption(OVERRIDE) ID LPARENS separated_list(COMMA, param) RPARENS option(COLON ID) IS bloc
+retType: COLON t = ID { t }
 
-param: ID COLON ID
+method_: DEF o = boption(OVERRIDE) name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) COLON ret = ID ASSIGN e = expr { Calc(o, name, params, ret, e) }
+       | DEF o = boption(OVERRIDE) name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) ret = option(retType) IS b = bloc { Body(o, name, params, ret, b) }
 
-bloc: LCBRACE loption(instr) RCBRACE
-    | LCBRACE list(decl) IS list(instr) RCBRACE
+param: name = ID COLON t = ID { (name, t) }
 
-decl: separated_nonempty_list(COMMA, ID) COLON ID SEMICOLON
+blocWDecl: decls = list(decl) IS instrs = list(instr) { (decls, instrs) }
 
-instr: expr SEMICOLON
-     | bloc
-     | RETURN SEMICOLON
-     | lvalue ASSIGN expr SEMICOLON
-     | IF expr THEN instr ELSE instr
+bloc: instrs = delimited(LCBRACE, list(instr), RCBRACE) { ([], instrs) }
+    | b = delimited(LCBRACE, blocWDecl, RCBRACE) { b }
 
-lvalue: ID
-      | ID LPARENS separated_list(COMMA, expr) RPARENS
-      | lvalue DOT lvalue
+decl: names = separated_nonempty_list(COMMA, ID) COLON t = ID SEMICOLON { (names, t) }
 
-rvalue: lvalue
-      | CSTE
-      | STRING
+instr: e = expr SEMICOLON { Expr(e) }
+     | b = bloc           { Bloc(b) }
+     | RETURN SEMICOLON   { Return  }
+     | v = value ASSIGN e = expr SEMICOLON { Assign(v, e) }
+     | IF i = expr THEN t = instr ELSE e = instr { Ite(i, t, e) }
 
-expr: rvalue
-    | expr PLUS expr
-    | expr MINUS expr
-    | expr TIMES expr
-    | expr DIV expr
-    | expr RELOP expr
-    | expr AND expr
-    | expr OR expr
-    | NOT expr
-    | MINUS expr %prec UMINUS
-    | PLUS expr %prec UPLUS 
-    | delimited(LPARENS, expr, RPARENS)
-    | expr CONCAT expr
-    [ NEW ID LPARENS separated_list(COMMA, expr) RPARENS
+valueFst: i = ID { Id(i) }
+        | c = CSTE   { Cste(c) }
+        | s = STRING { Str (s) }
+
+valueNxt: i = ID { Id(i) }
+        | f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Func(f, args) }
+
+value: v = valueFst { v }
+     | v1 = value DOT v2 = valueNxt { Access(v1, v2) }
+
+
+expr: v = value                       { Val(v) }
+    | e1 = expr PLUS  e2 = expr       { Plus (e1, e2) }
+    | e1 = expr MINUS e2 = expr       { Minus(e1, e2) }
+    | e1 = expr TIMES e2 = expr       { Times(e1, e2) }
+    | e1 = expr  DIV  e2 = expr       { Div  (e1, e2) }
+    | e1 = expr  AND  e2 = expr       { And  (e1, e2) }
+    | e1 = expr  OR   e2 = expr       { Or   (e1, e2) }
+    | e1 = expr op = RELOP e2 = expr  { Comp (e1, op, e2) }
+    | NOT e = expr                    { Not  (e)      }
+    | MINUS e = expr %prec UMINUS     { UMinus(e)     }
+    | PLUS e = expr %prec UPLUS           { e }
+    | e = delimited(LPAREN, expr, RPAREN) { e }
+    | e1 = expr CONCAT e2 = expr      { Concat(e1, e2) }
+    | NEW cl = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Inst(cl, args) }

@@ -42,7 +42,7 @@ class Point(xc: Integer, yc: Integer)
       if verbose then "Inside Point::print".println(); else { }
       /* Exemples avec l'operateur & de concatenation de chaines */
       this.name.print();
-      ( "= (" & this.x.toString() & ", " & this.y.toString() & ")" ).println();
+      // ( "= (" & this.x.toString() & ", " & this.y.toString() & ")" ).println(); // HERE syntax
   }
 
   /* par defaut, on ajoute un ' au nom de l'objet. Modifiable avec setName */

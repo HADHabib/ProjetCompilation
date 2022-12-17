@@ -20,8 +20,9 @@ let parse_with_error lexbuf file_in chan =
      * La valeur retournée par la production qui définit l'axiome renvoie une
      * valeur du type progType à définir dans ast.ml.
      *)
-    TpParse.prog TpLex.token lexbuf;
-    print_string "Fin de l'analyse syntaxique";
+    let ast = TpParse.prog TpLex.token lexbuf in
+    print_string "Fin de l'analyse syntaxique\n";
+    Ast.printAST ast;
   with (* traite exception général ... *)
     TpParse.Error -> (* levée par l'analyseur syntaxique *)
     Printf.fprintf stderr "Syntax error at position %a\n" print_position lexbuf;
