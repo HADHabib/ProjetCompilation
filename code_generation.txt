@@ -9,11 +9,14 @@ Class:
 
 Method:
   - "def [override] fun(params) : ret := expr" =
+   class_fun:
      _CODE(expr)
      _STORE(return_register)
      RETURN
   - "def [override] fun(params) [: ret] is bloc" =
+   class_fun:
      _CODE(bloc)
+     RETURN
 
 Bloc:
   - "{ instrs }" = _CODE(instrs)
@@ -25,7 +28,7 @@ Instruction:
   - "expr;" =
      _CODE(expr)
      POPN 1 -- on ne laisse pas le resultat de l'expression sur la pile ?
-  - "bloc" = CODE(bloc)
+  - "bloc" = _CODE(bloc)
   - "return;" =
      -- Nettoyer la pile ?
      RETURN
@@ -43,7 +46,7 @@ Instruction:
      NOP
 
 Expression:
-  - "val" = GET(val)
+  - "val" = _GET(val)
   - "expr1 op expr2" =
      _CODE(expr1)
      _CODE(expr2)
@@ -66,7 +69,13 @@ Call:
      CALL
      POPN len(exprs)
 
-MethodCall:
+Get  Value:
+  - "100" = PUSHI 100
+  - ""a"" = PUSHS "a"
+  - "var" =>   "G/L/O" X ->  PUSHG X/ PUSHL X/ LOAD X
+  - "val1.field" =
+     _GET(val1)
+     _GET(field)
   - "a.fun(exprs)" =
      _GET(a)
      _CODE(exprs)
@@ -76,4 +85,9 @@ MethodCall:
      CALL
      POPN len(exprs)+1
 
--> define _GET & _STORE
+Store in Value:
+  - Cst/Str/Method -> Error
+  - "var" =>   "G/L/O" X ->  STOREG X/ STOREL X/ STORE X
+  - "val1.field" =
+     _GET(val1)
+     _STORE(field)

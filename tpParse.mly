@@ -18,7 +18,6 @@ open Ast
 %type <expType> expr
 %type <valueType> value
 %type <valueType> valueFst
-%type <valueType> valueNxt
 %type <instrType> instr
 %type <blocType> bloc
 %type <blocType> blocWDecl
@@ -88,12 +87,9 @@ valueFst: i = ID { Id(i) }
         | c = CSTE   { Cste(c) }
         | s = STRING { Str (s) }
 
-valueNxt: i = ID { Id(i) }
-        | f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Func(f, args) }
-
 value: v = valueFst { v }
-     (*| v1 = value DOT v2 = valueNxt { Access(v1, v2) }*)
-     | e = expr DOT v = valueNxt { Access(e, v) }
+     | e = expr DOT i = ID { Access(e, i) }
+     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method(e, f, args) }
 
 
 expr: v = value                       { Val(v) }

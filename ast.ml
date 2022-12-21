@@ -3,8 +3,8 @@ type opComp =
 
 type valueType =
   Id of string
-| Func of string * (expType list)
-| Access of expType * valueType
+| Method of expType * string * (expType list)
+| Access of expType * string
 | Cste of int
 | Str of string
 and expType =
@@ -61,8 +61,8 @@ let printAST ast =
   let rec printVal v =
     match v with
     | Id(s) -> Printf.printf "%s" s
-    | Func(n, p) -> Printf.printf "%s(" n; printSeparated p printExpr ", "; Printf.printf ")"
-    | Access(e, v) -> printExpr e; Printf.printf "."; printVal v
+    | Method(e, f, p) -> printExpr e; Printf.printf ".%s(" f; printSeparated p printExpr ", "; Printf.printf ")"
+    | Access(e, v) -> printExpr e; Printf.printf ".%s" v
     | Cste(i) -> Printf.printf "%d" i
     | Str(s) -> Printf.printf "%s" s
   and printExpr e =
