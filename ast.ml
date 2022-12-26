@@ -1,10 +1,12 @@
 type opComp =
   Eq | Neq | Lt | Le | Gt | Ge
 
+type offset = | O of int | L of int | G of int
+
 type valueType =
-  Id of string
-| Method of expType * string * (expType list)
-| Access of expType * string
+  Id of string* offset
+| Method of expType * string * (expType list) * int 
+| Access of expType * string * offset
 | Cste of int
 | Str of string
 and expType =
