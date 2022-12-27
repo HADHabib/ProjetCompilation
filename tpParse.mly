@@ -83,13 +83,13 @@ instr: e = expr SEMICOLON { Expr(e) }
      | v = value ASSIGN e = expr SEMICOLON { Assign(v, e) }
      | IF i = expr THEN t = instr ELSE e = instr { Ite(i, t, e) }
 
-valueFst: i = ID { Id(i) }
+valueFst: i = ID { Id({name = i; off = O(0)}) }
         | c = CSTE   { Cste(c) }
         | s = STRING { Str (s) }
 
 value: v = valueFst { v }
-     | e = expr DOT i = ID { Access(e, i) }
-     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method(e, f, args) }
+     | e = expr DOT i = ID { Access({left = e; name = i; off = O(0)}) }
+     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method({left = e; name = f; args = args; vTableId = 0}) }
 
 
 expr: v = value                       { Val(v) }

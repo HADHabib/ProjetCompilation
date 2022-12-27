@@ -1,5 +1,5 @@
 INTERFACES = tpParse.mli
-SOURCES    = ast.ml tpParse.ml tpLex.ml misc.ml context.ml main.ml
+SOURCES    = ast.ml tpParse.ml tpLex.ml misc.ml context.ml codegen.ml main.ml
 #GENERATED  = tpLex.ml tpParse.ml tpParse.mli tpParse.automaton tpParse.conflicts
 GENERATED  = tpParse.ml tpParse.mli tpParse.automaton tpParse.conflicts
 

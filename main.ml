@@ -1,6 +1,7 @@
 open Ast
 open Lexing
 open Context
+open Codegen
 
 (* lexbuf: correspond au buffer d'entrée associé au programme qu'on traite
  * file_in: descripteur de fichier pour ce programme
@@ -25,6 +26,7 @@ let parse_with_error lexbuf file_in chan =
     print_string "Fin de l'analyse syntaxique\n";
     Context.verifProg ast;
     Ast.printAST ast;
+    Codegen.genProg ast;
   with (* traite exception général ... *)
     TpParse.Error -> (* levée par l'analyseur syntaxique *)
     Printf.fprintf stderr "Syntax error at position %a\n" print_position lexbuf;

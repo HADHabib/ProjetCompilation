@@ -996,7 +996,7 @@ let _menhir_action_67 =
   fun e i ->
     (
 # 91 "tpParse.mly"
-                           ( Access(e, i) )
+                           ( Access({left = e; name = i; off = O(0)}) )
 # 1001 "tpParse.ml"
      : (Ast.valueType))
 
@@ -1016,7 +1016,7 @@ let _menhir_action_68 =
     in
     (
 # 92 "tpParse.mly"
-                                                                                          ( Method(e, f, args) )
+                                                                                          ( Method({left = e; name = f; args = args; vTableId = 0}) )
 # 1021 "tpParse.ml"
      : (Ast.valueType))
 
@@ -1024,7 +1024,7 @@ let _menhir_action_69 =
   fun i ->
     (
 # 86 "tpParse.mly"
-                 ( Id(i) )
+                 ( Id({name = i; off = O(0)}) )
 # 1029 "tpParse.ml"
      : (Ast.valueType))
 
