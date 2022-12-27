@@ -3,10 +3,13 @@ type opComp =
 
 type offset = | O of int | L of int | G of int
 
-type valueType =
-  Id of string* offset
-| Method of expType * string * (expType list) * int 
-| Access of expType * string * offset
+type valueTypeMethod = {left: expType; name: string; args: expType list; mutable vTableId: int}
+and valueTypeAccess = {left: expType; name: string; mutable off: offset}
+and valueTypeId = {name: string; mutable off: offset}
+and valueType =
+  Id of valueTypeId
+| Method of valueTypeMethod
+| Access of valueTypeAccess
 | Cste of int
 | Str of string
 and expType =
@@ -62,9 +65,9 @@ let rec printList l pm =
 let printAST ast =
   let rec printVal v =
     match v with
-    | Id(s) -> Printf.printf "%s" s
-    | Method(e, f, p) -> printExpr e; Printf.printf ".%s(" f; printSeparated p printExpr ", "; Printf.printf ")"
-    | Access(e, v) -> printExpr e; Printf.printf ".%s" v
+    | Id(var) -> Printf.printf "%s" var.name
+    | Method(call) -> printExpr call.left; Printf.printf ".%s(" call.name; printSeparated call.args printExpr ", "; Printf.printf ")"
+    | Access(acc) -> printExpr acc.left; Printf.printf ".%s" acc.name
     | Cste(i) -> Printf.printf "%d" i
     | Str(s) -> Printf.printf "%s" s
   and printExpr e =
