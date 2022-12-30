@@ -89,7 +89,7 @@ valueFst: i = ID { Id({name = i; off = O(0)}) }
 
 value: v = valueFst { v }
      | e = expr DOT i = ID { Access({left = e; name = i; off = O(0)}) }
-     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method({left = e; name = f; args = args; vTableId = 0}) }
+     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method({left = e; name = f; args = args; vTableId = 0; objectName = ""; pushLeft = true}) }
 
 
 expr: v = value                       { Val(v) }

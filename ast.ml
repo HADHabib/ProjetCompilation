@@ -3,7 +3,7 @@ type opComp =
 
 type offset = | O of int | L of int | G of int
 
-type valueTypeMethod = {left: expType; name: string; args: expType list; mutable vTableId: int}
+type valueTypeMethod = {left: expType; name: string; args: expType list; mutable vTableId: int; mutable objectName: string; mutable pushLeft: bool}
 and valueTypeAccess = {left: expType; name: string; mutable off: offset}
 and valueTypeId = {name: string; mutable off: offset}
 and valueType =

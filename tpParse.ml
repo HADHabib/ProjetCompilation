@@ -1016,7 +1016,7 @@ let _menhir_action_68 =
     in
     (
 # 92 "tpParse.mly"
-                                                                                          ( Method({left = e; name = f; args = args; vTableId = 0}) )
+                                                                                          ( Method({left = e; name = f; args = args; vTableId = 0; objectName = ""; pushLeft = true}) )
 # 1021 "tpParse.ml"
      : (Ast.valueType))
 

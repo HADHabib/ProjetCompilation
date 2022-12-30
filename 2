@@ -1,0 +1,130 @@
+open Ast
+
+let globalProg: progType ref = ref ([], ([],[]))
+
+let getClass name = List.find (fun c -> match c with (_,n,_,_,_,_) -> n = name) (fst !globalProg)
+
+let getClassSize name =
+    let cl = getClass name in match cl with (_,_,_,_,_,i) -> List.length (fst i) + 1
+
+
+let rec genGetVal v =
+    match v with
+    | Id(v) -> (match v.off with | O(i) -> Printf.printf "    LOAD %d\n" i | G(i) -> Printf.printf "    PUSHG %d\n" i | L(i) -> Printf.printf "    PUSHL %d\n" i)
+    | Method(m) -> if m.vTableId = -1 then genStaticCall (m.objectName ^ "_" ^ m.name) m.args true else genThisCall m
+    | Access(a) -> genExpr a.left; (match a.off with | O(i) -> Printf.printf "    LOAD %d\n" i | G(i) -> Printf.printf "    PUSHG %d\n" i | L(i) -> Printf.printf "    PUSHL %d\n" i)
+    | Cste(i) -> Printf.printf "    PUSHI %d\n" i
+    | Str(s) -> Printf.printf "    PUSHS %s\n" s
+and genExpr e =
+    match e with
+    | Val(v) -> genGetVal v
+    | Plus(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    ADD\n"
+    | Times(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    MUL\n"
+    | Minus(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    SUB\n"
+    | Div(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    DIV\n"
+    | And(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    AND\n"
+    | Or(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    OR\n"
+    | Concat(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    CONCAT\n"
+    | UMinus(e) -> genExpr e; Printf.printf "    PUSHI -1\n    MUL\n"
+    | Not(e) -> genExpr e; Printf.printf "    NOT\n"
+    | Inst(n, a) -> Printf.printf "    ALLOC %d\n" (getClassSize n); genStaticCall (n ^ "__constructor") a false
+    | Comp(e1, c, e2) -> match c with
+    | Eq -> genExpr e1; genExpr e2; Printf.printf "    EQUAL\n"
+    | Neq -> genExpr e1; genExpr e2; Printf.printf "    EQUAL\n    NOT\n"
+    | Lt -> genExpr e1; genExpr e2; Printf.printf "    INF\n"
+    | Le -> genExpr e1; genExpr e2; Printf.printf "    INFEQ\n"
+    | Gt -> genExpr e1; genExpr e2; Printf.printf "    SUP\n"
+    | Ge -> genExpr e1; genExpr e2; Printf.printf "    SUPEQ\n"
+and genStaticCall n args push =
+    (if push then Printf.printf "    PUSHN 1\n" else ());
+    List.iter genExpr args;
+    Printf.printf "    PUSHA %s\n    CALL\n    POPN %d\n" n (List.length args)
+and genThisCall m =
+    genExpr m.left;
+    List.iter genExpr m.args;
+    Printf.printf "    PUSHN 1\n    DUPN 1\n    LOAD 0\n    LOAD %d\n    CALL\n    POPN %d\n" m.vTableId (List.length m.args + 1)
+
+let genStoreVal v =
+    match v with
+    | Id(v) -> (match v.off with | O(i) -> Printf.printf "    STORE %d\n" i | G(i) -> Printf.printf "    STOREG %d\n" i | L(i) -> Printf.printf "    STOREL %d\n" i)
+    | Access(a) -> genExpr a.left; (match a.off with | O(i) -> Printf.printf "    STORE %d\n" i | G(i) -> Printf.printf "    STOREG %d\n" i | L(i) -> Printf.printf "    STOREL %d\n" i)
+    | _ -> ()
+
+let rec genInstr i =
+    match i with
+    | Expr(e) -> genExpr e; Printf.printf "    POPN 1\n"
+    | Bloc(b) -> genBloc b
+    | Return -> Printf.printf "    RETURN\n" (* nettoyer la pile ? *)
+    | Assign(lv, e) -> genExpr e; genStoreVal lv
+    | Ite(e, i1, i2) -> genExpr e; Printf.printf "    JZ %s\n" "label_else"; (* TODO: auto generate label *)
+                    genInstr i1; Printf.printf "    JUMP %s\n" "label_endif"; (* TODO: auto generate label *)
+                    Printf.printf "%s: NOP\n" "label_else"; genInstr i2; (* TODO: use same label *)
+                    Printf.printf "%s: NOP\n" "label_endif" (* TODO: use same label *)
+and genBloc b =
+    (match (fst b) with
+     | [] -> ()
+     | l -> Printf.printf "    PUSHN %d\n" (List.fold_left (fun a v -> a + List.length (fst v)) 0 l)
+    );
+    List.iter genInstr (snd b)
+
+let globalClassName = ref ""
+let globalClassId = ref 0
+
+let genMethod m =
+    match m with
+    | Calc(_, name, _, _, e) ->
+        Printf.printf "%s_%s: NOP\n" !globalClassName name;
+        genExpr e;
+        Printf.printf "    RETURN\n\n"
+    | Body(_, name, _, _, b) ->
+        Printf.printf "%s_%s: NOP\n" !globalClassName name;
+        genBloc b;
+        Printf.printf "    RETURN\n\n"
+
+let genConstructor n b =
+    Printf.printf "%s__constructor: NOP\n" n;
+    (* call parent constructor *)
+    Printf.printf "    PUSHG %d\n    STORE 0\n" !globalClassId; (* store VTable at offset 0 *)
+    (match b with
+     | None -> ()
+     | Some bl -> genBloc bl);
+    Printf.printf "    RETURN\n\n"
+
+let genGetter c f = ()
+
+let preGenClass cl =
+    match cl with (obj, name, _, _, _, inner) ->
+        if obj then begin (* construct static instance *)
+            Printf.printf "    ALLOC %d\n" (getClassSize name); genStaticCall (n ^ "__constructor") [] false
+            Printf.printf "    STOREG %d\n" !globalClassId
+        end else begin (* create VTable *)
+            Printf.printf "    ALLOC %d\n    DUPN %d\n" (List.length (snd inner)) (List.length (snd inner));
+            (* TODO: getters in VTable + redefinition*)
+            let i = ref 0 in List.iter (fun m -> match m with (_, n, _, _, _) -> Printf.printf "    PUSHA %s_%s\n    STORE %d\n" name n !i; i := !i + 1) (snd inner);
+            Printf.printf "    STOREG %d\n" !globalClassId
+        end
+    globalClassId := !globalClassId + 1
+
+let genStatic prog =
+    Printf.printf "    START\n";
+    List.iter preGenClass (fst prog);
+    Printf.printf "    JUMP start\n\n"
+    (* gen code of Integer_toString, String_print(ln) *)
+
+let genClass cl =
+    match cl with (_,n,_,_,c,i) ->
+        globalClassName := n;
+        genConstructor n c;
+        (* TODO: gen getters *)
+        List.iter genMethod (snd i);
+        globalClassId := !globalClassId + 1
+
+let genProg prog =
+    globalProg := prog;
+    globalClassId := 0
+    genStatic prog;
+    globalClassId := 0
+    List.iter genClass (fst prog);
+    Printf.printf "start: NOP\n";
+    genBloc (snd prog);
+    Printf.printf "    STOP\n"
