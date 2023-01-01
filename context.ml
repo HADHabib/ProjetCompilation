@@ -2,7 +2,7 @@ open Ast
 
 type classVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod option; mutable parent : classVerifType option}
 and variable = {name : string; typeVar : classVerifType; mutable offset : Ast.offset}
-and classmethod = {name : string; returnType : classVerifType option; parametre : variable list; mutable offset : int }
+and classmethod = {name : string; returnType : classVerifType option; mutable parametre : variable list; mutable offset : int }
 type objectVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod option}
 
 (* builtin classes and methods *)
@@ -21,12 +21,12 @@ let findClass  (name : string) (classes   : classVerifType list) : classVerifTyp
 let findVar    (name : string) (variables : variable       list) : variable       option = List.find_opt (fun (a : variable      ) -> name = a.name) variables
 let findMethod (name : string) (methodes  : classmethod    list) : classmethod    option = List.find_opt (fun (a : classmethod   ) -> name = a.name) methodes
 
+let getClass (name : string) (classes : classVerifType list) : classVerifType = (match findClass name classes with | None -> raise (VC_Error "class not found") | Some t -> t)
 let identIsObject (name : string) (objects : objectVerifType list) : bool = match List.find_opt (fun (a : objectVerifType) -> name = a.name) objects with None -> false | Some o -> true
 let getObjectFromExpr (v : Ast.expType) (objects : objectVerifType list) : objectVerifType = match v with | Val(Id(ob)) -> List.find (fun  (a : objectVerifType) -> ob.name = a.name) objects | _ -> objEmpty
 let optTypeAsNonOpt (cl : classVerifType option) (err : string) : classVerifType = (match cl with | None -> raise (VC_Error err) | Some t -> t)
 
 (* verif functions *)
-
 let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : classVerifType option =
     match v with
     | Id(var) ->
@@ -121,9 +121,18 @@ and verifExpr (e : Ast.expType) (classes : classVerifType list) (objects : objec
         Some classe (* Return the class n *)
 
 let verifStore (lv : Ast.valueType) (e : Ast.expType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
-    let t : classVerifType option = verifExpr e classes objects variables in
-    () (* match types of lv and e, check lv writable and annotate AST *)
+    (match lv with
+     | Id(_) -> ()
+     | Access(a) ->
+         (match a.left with Val(Access(v)) -> if v.name = "this" then raise (VC_Error "Wrong store") else () | _ -> ())
+     | _ -> raise (VC_Error "Wrong store")
+    );
+    if verifValue lv classes objects variables <> verifExpr e classes objects variables then raise (VC_Error "Wrong store") else ()
 
+let globalBlocOff : int ref = ref (-1)
+let globalFieldOff : int ref = ref 1
+let globalMethodOff : int ref = ref 0
+let globalCurrentClass : classVerifType ref = ref classOBJECTCALL
 let rec verifInstr (i : Ast.instrType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
     match i with
     | Expr(e) -> ignore (verifExpr e classes objects variables)
@@ -133,36 +142,120 @@ let rec verifInstr (i : Ast.instrType) (classes : classVerifType list) (objects 
     | Ite(e, i1, i2) -> if (verifExpr e classes objects variables <> Some classInteger) then raise (VC_Error "Expression in if statement should return an integer") else (verifInstr i1 classes objects variables; verifInstr i2 classes objects variables)
 and verifBloc (b : Ast.blocType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
     (match (fst b) with
-     | [] -> ()
+     | [] -> List.iter (fun (x : Ast.instrType) -> verifInstr x classes objects variables) (snd b)
      | l ->
-         () (* verif class existance and add variable to variables list *)
-    );
-    List.iter (fun (x : Ast.instrType) -> verifInstr x classes objects variables) (snd b)
+         let vars = List.fold_left (fun (acc : variable list) (decl : Ast.declType) ->
+            let classe_ : classVerifType option = findClass (snd decl) classes in (* Check class n exists *)
+            let classe : classVerifType = (match classe_ with | None -> raise (VC_Error "Couldn't find class") | Some c -> c) in
+            List.fold_left (fun (acc : variable list) (name : string) -> globalBlocOff := !globalBlocOff+1; {name = name; typeVar = classe; offset = L(!globalBlocOff)} :: acc) variables (fst decl)
+         ) variables l in (* add variable to variables list *)
+         List.iter (fun (x : Ast.instrType) -> verifInstr x classes objects vars) (snd b)
+    )
 
-let verifMethod (m : Ast.methodType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
+
+
+
+let addMethod (m : Ast.methodType) (newclass : classVerifType) (classes : classVerifType list) : unit =
+    let i : int ref = ref (-1) in
     match m with
-    | Calc(override, name, params, retType, expr) -> ()
-       (* if override, check if parent type has the same method *)
-       (* create a list of variables that contains the params with the correct offset *)
-       (* check expr and compare return type *)
-    | Body(override, name, params, retType, bloc) -> ()
-       (* if override, check if parent type has the same method *)
-       (* create a list of variables that contains the params and the result variable if retType is not None with the correct offset *)
-       (* check bloc *)
+    | Calc(override, name, params, retType, expr) ->
+        let meth = {name = name; returnType = Some (getClass retType classes); parametre = []; offset = !globalMethodOff} in
+        if override then begin
+            let methoverride_ = findMethod name newclass.methode in (* class already has method : *)
+            let methoverride = match methoverride_ with None -> raise (VC_Error "Method is not redefinition") | Some m -> m in
+            (if (List.length methoverride.parametre) <> (List.length params) then raise (VC_Error "Method is not redefinition") else ()); (* verif parameters *)
+            List.iter2 (fun (carg : Ast.paramType) (marg : variable) -> if (snd carg) <> marg.typeVar.name then raise (VC_Error "Method is not redefinition")) params methoverride.parametre
+        end else begin
+            (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
+            meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+            newclass.methode <- (meth :: newclass.methode)
+        end
+    | Body(override, name, params, retType, bloc) ->
+        let meth = {name = name; returnType = (match retType with None -> None | Some s -> Some (getClass s classes)); parametre = []; offset = !globalMethodOff} in
+        if override then begin
+            let methoverride_ = findMethod name newclass.methode in (* class already has method : *)
+            let methoverride = match methoverride_ with None -> raise (VC_Error "Method is not redefinition") | Some m -> m in
+            (if (List.length methoverride.parametre) <> (List.length params) then raise (VC_Error "Method is not redefinition") else ()); (* verif parameters *)
+            List.iter2 (fun (carg : Ast.paramType) (marg : variable) -> if (snd carg) <> marg.typeVar.name then raise (VC_Error "Method is not redefinition")) params methoverride.parametre
+        end else begin
+            (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
+            meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+            newclass.methode <- (meth :: newclass.methode)
+        end
+
+let addMethodObj (m : Ast.methodType) (newclass : objectVerifType) (classes : classVerifType list) : unit =
+    let i : int ref = ref 0 in
+    match m with
+    | Calc(override, name, params, retType, expr) ->
+        let meth = {name = name; returnType = Some (getClass retType classes); parametre = []; offset = !globalMethodOff} in
+        (if override then raise (VC_Error "No subclass with objects") else ());
+        (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
+        meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+        newclass.methode <- (meth :: newclass.methode)
+    | Body(override, name, params, retType, bloc) ->
+        let meth = {name = name; returnType = (match retType with None -> None | Some s -> Some (getClass s classes)); parametre = []; offset = !globalMethodOff} in
+        (if override then raise (VC_Error "No subclass with objects") else ());
+        (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
+        meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+        newclass.methode <- (meth :: newclass.methode)
+
+
+
+
+let verifMethodBody (m : Ast.methodType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) (thiscall : bool) : unit =
+    globalBlocOff := (-1);
+    let params = if thiscall then {name = "this"; typeVar = !globalCurrentClass; offset = L(-1)} :: variables else variables in
+    match m with
+    | Calc(override, name, _, retType, expr) ->
+        if verifExpr expr classes objects params <> Some (getClass retType classes) then raise (VC_Error "Return type don't match") else () (* check expr and compare return type *)
+    | Body(override, name, _, retType, bloc) ->
+        match retType with (* check bloc, add variable for return *)
+        | None -> verifBloc bloc classes objects params
+        | Some t -> verifBloc bloc classes objects ({name = "result"; typeVar = getClass t classes; offset = L(-(List.length params))} :: params)
+
+let verifField (f : Ast.fieldType) (cl : classVerifType) (classes : classVerifType list): unit =
+    match f with (a, n, t) ->
+        let classe = if t = cl.name then cl else getClass t classes in
+        (if (List.exists (fun (x : variable) -> x.name = n) cl.champs) || (List.exists (fun (x : classmethod) -> x.name = n) cl.methode) then raise (VC_Error "duplicate field") else ());
+        (if a then (cl.methode <- {name = n; returnType = Some classe; parametre = []; offset = !globalMethodOff} :: cl.methode; globalMethodOff := !globalMethodOff + 1) else ());
+        cl.champs <- {name = n; typeVar = classe; offset = O(!globalFieldOff)} :: cl.champs;
+        globalFieldOff := !globalFieldOff + 1
+
+let verifFieldObj (f : Ast.fieldType) (cl : objectVerifType) (classes : classVerifType list): unit =
+    match f with (a, n, t) ->
+        let classe = getClass t classes in
+        (if (List.exists (fun (x : variable) -> x.name = n) cl.champs) || (List.exists (fun (x : classmethod) -> x.name = n) cl.methode) then raise (VC_Error "duplicate field") else ());
+        (if a then (cl.methode <- {name = n; returnType = Some classe; parametre = []; offset = !globalMethodOff} :: cl.methode; globalMethodOff := !globalMethodOff + 1) else ());
+        cl.champs <- {name = n; typeVar = classe; offset = O(!globalFieldOff)} :: cl.champs;
+        globalFieldOff := !globalFieldOff + 1
+
+let globalClassId : int ref = ref 0
 
 let verifObject (ob : Ast.classType) (classes : classVerifType list) (objects : objectVerifType list) : classVerifType list * objectVerifType list =
+    match ob with (_, name, _, _, bl, inner) ->
     let newobj : objectVerifType = {name = "name"; champs = []; methode = []; constructeur = None} in
-    (* same as class *)
+    globalCurrentClass := classOBJECTCALL;
+    List.iter (fun f -> verifFieldObj f newobj classes) (fst inner);
+    List.iter (fun m -> addMethodObj m newobj classes) (snd inner);
+    (match bl with None -> () | Some b -> verifBloc b classes (newobj::objects) [{name = "this"; typeVar = classOBJECTCALL; offset = G(!globalClassId)}]);
+    (* List.iter (fun m -> verifMethodBody m classes (newobj::objects) (* params *)false) (snd inner); *)
+    globalClassId := !globalClassId + 1;
     (classes, newobj::objects)
 
 let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : objectVerifType list) : classVerifType list * objectVerifType list =
+    globalMethodOff := 0;
+    globalFieldOff := 1;
     match cl with (obj, name, args, ext, bl, inner) ->
     if obj then verifObject cl classes objects else begin
         let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = None; parent = None} in
-        (* create getter for 'auto' fields *)
-        (* put methods, fields (check type exist), constructor and parent in newclass *)
-        (* check for duplicate field or method *)
-        (* check all methods *)
+        globalCurrentClass := newclass;
+        (* put parent thing *)
+        List.iter (fun f -> verifField f newclass classes) (fst inner);
+        List.iter (fun m -> addMethod m newclass classes) (snd inner);
+        let i : int ref = ref 0 in
+        (match bl with None -> () | Some b -> verifBloc b (newclass::classes) objects (List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) [{name = "this"; typeVar = newclass; offset = L(-(List.length args))}] args));
+        (* List.iter (fun m -> verifMethodBody m (newclass::classes) objects (* params *) true) (snd inner); *)
+        globalClassId := !globalClassId + 1;
         (newclass::classes, objects)
     end
 
