@@ -23,9 +23,9 @@ let parse_with_error lexbuf file_in chan =
      * valeur du type progType à définir dans ast.ml.
      *)
     let ast = TpParse.prog TpLex.token lexbuf in
-    print_string "Fin de l'analyse syntaxique\n";
-    Context.verifProg ast;
-    Ast.printAST ast;
+    (**print_string "Fin de l'analyse syntaxique\n";*)
+    (**Context.verifProg ast;*)
+    (**Ast.printAST ast;*)
     Codegen.genProg ast;
   with (* traite exception général ... *)
     TpParse.Error -> (* levée par l'analyseur syntaxique *)

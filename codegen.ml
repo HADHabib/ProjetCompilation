@@ -56,16 +56,22 @@ let genStoreVal v =
     | Access(a) -> genExpr a.left; genStore a.off a.name
     | _ -> ()
 
+let i: int ref = ref 0
+let genLabel (n : string) : string = i := !i + 1; Printf.sprintf "lbl__%d__%s%d" !i n !i
+
 let rec genInstr i =
     match i with
     | Expr(e) -> genExpr e; Printf.printf "    POPN 1 -- cleanup stack\n"
     | Bloc(b) -> genBloc b
     | Return -> Printf.printf "    RETURN\n" (* nettoyer la pile ? *)
     | Assign(lv, e) -> genExpr e; genStoreVal lv
-    | Ite(e, i1, i2) -> genExpr e; Printf.printf "    JZ %s\n" "label_else"; (* TODO: auto generate label *)
-                    genInstr i1; Printf.printf "    JUMP %s\n" "label_endif"; (* TODO: auto generate label *)
-                    Printf.printf "%s: NOP\n" "label_else"; genInstr i2; (* TODO: use same label *)
-                    Printf.printf "%s: NOP\n" "label_endif" (* TODO: use same label *)
+    | Ite(e, i1, i2) ->
+        let label_else = genLabel "else" in
+        let label_endif = genLabel "endif" in
+        genExpr e; Printf.printf "    JZ %s\n" label_else;
+        genInstr i1; Printf.printf "    JUMP %s\n" label_endif;
+        Printf.printf "%s: NOP\n" label_else; genInstr i2;
+        Printf.printf "%s: NOP\n" label_endif
 and genBloc b =
     (match (fst b) with
      | [] -> ()

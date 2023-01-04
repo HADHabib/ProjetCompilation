@@ -238,7 +238,7 @@ let verifObject (ob : Ast.classType) (classes : classVerifType list) (objects : 
     List.iter (fun f -> verifFieldObj f newobj classes) (fst inner);
     List.iter (fun m -> addMethodObj m newobj classes) (snd inner);
     (match bl with None -> () | Some b -> verifBloc b classes (newobj::objects) [{name = "this"; typeVar = classOBJECTCALL; offset = G(!globalClassId)}]);
-    (* List.iter (fun m -> verifMethodBody m classes (newobj::objects) (* params *)false) (snd inner); *)
+    (* TODO List.iter (fun m -> verifMethodBody m classes (newobj::objects) (* params *)false) (snd inner); *)
     globalClassId := !globalClassId + 1;
     (classes, newobj::objects)
 
@@ -249,12 +249,16 @@ let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : o
     if obj then verifObject cl classes objects else begin
         let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = None; parent = None} in
         globalCurrentClass := newclass;
-        (* put parent thing *)
+        (* TODO put parent thing *)
+        (* verif parent class exists *)
+        (* verif params of parent constructor (/!\ variables dans param du constructeur) *)
+        (* copy fields and methods of parent class in current class *)
+        (* update globalMethodOff & globalFieldOff accordingly *)
         List.iter (fun f -> verifField f newclass classes) (fst inner);
         List.iter (fun m -> addMethod m newclass classes) (snd inner);
         let i : int ref = ref 0 in
         (match bl with None -> () | Some b -> verifBloc b (newclass::classes) objects (List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) [{name = "this"; typeVar = newclass; offset = L(-(List.length args))}] args));
-        (* List.iter (fun m -> verifMethodBody m (newclass::classes) objects (* params *) true) (snd inner); *)
+        (* TODO List.iter (fun m -> verifMethodBody m (newclass::classes) objects (* params *) true) (snd inner); *)
         globalClassId := !globalClassId + 1;
         (newclass::classes, objects)
     end
