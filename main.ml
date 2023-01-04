@@ -24,7 +24,7 @@ let parse_with_error lexbuf file_in chan =
      *)
     let ast = TpParse.prog TpLex.token lexbuf in
     (**print_string "Fin de l'analyse syntaxique\n";*)
-    (**Context.verifProg ast;*)
+    Context.verifProg ast;
     (**Ast.printAST ast;*)
     Codegen.genProg ast;
   with (* traite exception général ... *)

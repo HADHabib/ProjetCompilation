@@ -1,0 +1,14 @@
+class Point(xc: Integer, yc: Integer) {
+    this.x := xc;
+    this.y := yc;
+} is {
+    var auto x : Integer;
+    var auto y : Integer;
+}
+
+{
+    x : Point; is
+    x = new Point(1, 2);
+    x.x().toString().println();
+    x.y().toString().println();
+}
