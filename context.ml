@@ -57,12 +57,12 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
     | Method(call) ->
         let typ_ : classVerifType option = verifExpr call.left classes objects variables in (* get type of left expression *)
         let typ : classVerifType = optTypeAsNonOpt typ_ "Can't call method on void" in
-        if typ = classOBJECTCALL then begin
+        if typ.name = "_object_" then begin
             let obj : objectVerifType = getObjectFromExpr call.left objects in
             let methode_ : classmethod option = findMethod call.name obj.methode in (* check method exist in obj *)
             let methode : classmethod = (match methode_ with | None -> (let str = Printf.sprintf "Undefined method : %s::%s" obj.name call.name in raise (VC_Error str)) | Some m -> m) in
             (if (List.length methode.parametre) <> (List.length call.args) then raise (VC_Error "Wrong arguments") else ()); (* verif parameters *)
-            List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void") <> marg.typeVar then raise (VC_Error "Wrong type argument")) call.args methode.parametre;
+            List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void").name <> marg.typeVar.name then raise (VC_Error "Wrong type argument")) call.args methode.parametre;
             call.vTableId <- -1; (* annotate AST *)
             call.objectName <- obj.name;
             call.pushLeft <- false;
@@ -71,7 +71,7 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
             let methode_ : classmethod option = findMethod call.name typ.methode in (* check method exist in typ *)
             let methode : classmethod = (match methode_ with | None -> (let str = Printf.sprintf "Undefined method : %s::%s" typ.name call.name in raise (VC_Error str)) | Some m -> m) in
             (if (List.length methode.parametre) <> (List.length call.args) then raise (VC_Error "Wrong arguments") else ()); (* verif parameters *)
-            List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void") <> marg.typeVar then raise (VC_Error "Wrong type argument")) call.args methode.parametre;
+            List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void").name <> marg.typeVar.name then raise (VC_Error "Wrong type argument")) call.args methode.parametre;
             call.vTableId <- methode.offset; (* annotate AST *)
             (* special cases : *)
             (if methode = integer_toString then (call.objectName <- "Integer"; call.pushLeft <- true) else ());
@@ -85,7 +85,7 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
         let this : Ast.valueTypeId = match acc.left with Val(Id(v)) -> if v.name <> "this" then raise (VC_Error "Variable can't be accessed") else v | _ -> raise (VC_Error "Only access a variable") in
         this.off <- var.offset; (* annotate AST left *)
         (* check if this is object - *)
-        if var.typeVar = classOBJECTCALL then begin
+        if var.typeVar.name = "_object_" then begin
             let obj : objectVerifType = getObjectFromExpr acc.left objects in
             let field_ : variable option = findVar acc.name obj.champs in
             let field : variable = (match field_ with | None -> raise (VC_Error "Couldn't find field") | Some v -> v) in
@@ -99,44 +99,44 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
         end
     | Cste(i) -> Some classInteger
     | Str(s) -> Some classString
-
+and optClassName (cl : classVerifType option) : string = match cl with None -> "_none_" | Some c -> c.name
 and verifExpr (e : Ast.expType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : classVerifType option =
     match e with
     | Val(v) -> verifValue v classes objects variables
     | Plus(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                       let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                      (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Addition is between integer")); Some classInteger
+                      (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Addition is between integer")); Some classInteger
     | Times(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                        let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                       (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Multiplication is between integer")); Some classInteger
+                       (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Multiplication is between integer")); Some classInteger
     | Minus(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                        let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                       (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Subtractiontion is between integer")); Some classInteger
+                       (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Subtraction is between integer")); Some classInteger
     | Div(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                      let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                     (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Division is between integer")); Some classInteger
+                     (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Division is between integer")); Some classInteger
     | And(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                      let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                     (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "And is between integer")); Some classInteger
+                     (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "And is between integer")); Some classInteger
     | Or(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                     let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                    (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Or is between integer")); Some classInteger
+                    (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Or is between integer")); Some classInteger
     | Comp(e1, _, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                          let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                         (if t1 <> Some classInteger || t2 <> Some classInteger then raise (VC_Error "Comparison is between integer")); Some classInteger
+                         (if optClassName t1 <> "Integer" || optClassName t2 <> "Integer" then raise (VC_Error "Comparison is between integer")); Some classInteger
     | Concat(e1, e2) -> let t1 : classVerifType option = verifExpr e1 classes objects variables in
                         let t2 : classVerifType option = verifExpr e2 classes objects variables in
-                        (if t1 <> Some classString || t2 <> Some classString then raise (VC_Error "Concatenation is between strings")); Some classString
+                        (if optClassName t1 <> "String" || optClassName t2 <> "String" then raise (VC_Error "Concatenation is between strings")); Some classString
     | UMinus(e) -> let t : classVerifType option = verifExpr e classes objects variables in
-                   (if t <> Some classInteger then raise (VC_Error "Negation is for integer")); Some classInteger
+                   (if optClassName t <> "Integer" then raise (VC_Error "Negation is for integer")); Some classInteger
     | Not(e) -> let t : classVerifType option = verifExpr e classes objects variables in
-                (if t <> Some classInteger then raise (VC_Error "Not is for integer")); Some classInteger
+                (if optClassName t <> "Integer" then raise (VC_Error "Not is for integer")); Some classInteger
     | Inst(n, a) ->
         let classe_ : classVerifType option = findClass n classes in (* Check class n exists *)
         let classe : classVerifType = (match classe_ with | None -> raise (VC_Error "Couldn't find class") | Some c -> c) in
         let cons_args : variable list = (match classe.constructeur with | None -> [] | Some c -> c.parametre) in
         (if (List.length cons_args) <> (List.length a) then raise (VC_Error (Printf.sprintf "Constructor of class %s takes %d parameters (got %d)" n (List.length cons_args) (List.length a))) else ()); (* verif parameters *)
-        List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void") <> marg.typeVar then raise (VC_Error "Wrong type argument")) a cons_args;
+        List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (optTypeAsNonOpt (verifExpr carg classes objects variables) "Argument can't be void").name <> marg.typeVar.name then raise (VC_Error "Wrong type argument")) a cons_args;
         Some classe (* Return the class n *)
 
 let verifStore (lv : Ast.valueType) (e : Ast.expType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
@@ -146,7 +146,7 @@ let verifStore (lv : Ast.valueType) (e : Ast.expType) (classes : classVerifType 
          (match a.left with Val(Access(v)) -> if v.name = "this" then raise (VC_Error "Wrong store (access)") else () | _ -> ())
      | _ -> raise (VC_Error "Wrong store (not an lvalue)")
     );
-    if verifValue lv classes objects variables <> verifExpr e classes objects variables then raise (VC_Error "Wrong store (type)") else ()
+    if optClassName (verifValue lv classes objects variables) <> optClassName(verifExpr e classes objects variables) then raise (VC_Error "Wrong store (type)") else ()
 
 let rec verifInstr (i : Ast.instrType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
     match i with
@@ -154,7 +154,7 @@ let rec verifInstr (i : Ast.instrType) (classes : classVerifType list) (objects 
     | Bloc(b) -> verifBloc b classes objects variables
     | Return -> () (* IDK, verif reachable statement ? *)
     | Assign(lv, e) -> verifStore lv e classes objects variables
-    | Ite(e, i1, i2) -> if (verifExpr e classes objects variables <> Some classInteger) then raise (VC_Error "Expression in if statement should return an integer") else (verifInstr i1 classes objects variables; verifInstr i2 classes objects variables)
+    | Ite(e, i1, i2) -> if (optClassName (verifExpr e classes objects variables) <> "Integer") then raise (VC_Error "Expression in if statement should return an integer") else (verifInstr i1 classes objects variables; verifInstr i2 classes objects variables)
 and verifBloc (b : Ast.blocType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
     Printf.printf "Enter verifBloc\n";
     (match (fst b) with
@@ -196,7 +196,7 @@ let addMethod (m : Ast.methodType) (newclass : classVerifType) (classes : classV
             newclass.methode <- (meth :: newclass.methode)
         end else begin
             (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
-            meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) [] params; (* get params *)
+            meth.parametre <- List.fold_right (fun x acc -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) params []; (* get params *)
             newclass.methode <- (meth :: newclass.methode)
         end
 
@@ -207,13 +207,13 @@ let addMethodObj (m : Ast.methodType) (newclass : objectVerifType) (classes : cl
         let meth = {name = name; returnType = Some (getClass retType classes); parametre = []; offset = !globalMethodOff} in
         (if override then raise (VC_Error "No subclass with objects") else ());
         (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
-        meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+        meth.parametre <- List.fold_right (fun x acc -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) params []; (* get params *)
         newclass.methode <- (meth :: newclass.methode)
     | Body(override, name, params, retType, bloc) ->
         let meth = {name = name; returnType = (match retType with None -> None | Some s -> Some (getClass s classes)); parametre = []; offset = !globalMethodOff} in
         (if override then raise (VC_Error "No subclass with objects") else ());
         (match findMethod name newclass.methode with None -> () | Some _ -> raise (VC_Error "Method already defined")); (* check duplicate *)
-        meth.parametre <- List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) [] params; (* get params *)
+        meth.parametre <- List.fold_right (fun x acc -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) classes; offset = L(!i)}::acc ) params []; (* get params *)
         newclass.methode <- (meth :: newclass.methode)
 
 
@@ -225,7 +225,7 @@ let verifMethodBody (m : Ast.methodType) (classes : classVerifType list) (object
     match m with
     | Calc(override, name, _, retType, expr) ->
         Printf.printf "In verifMethodBody(Calc) %s\n" name;
-        if verifExpr expr classes objects params <> Some (getClass retType classes) then raise (VC_Error "Return type don't match") else () (* check expr and compare return type *)
+        if optClassName (verifExpr expr classes objects params) <> retType then raise (VC_Error "Return type don't match") else () (* check expr and compare return type *)
     | Body(override, name, _, retType, bloc) ->
         Printf.printf "In verifMethodBody(Body) %s\n" name;
         (match retType with (* check bloc, add variable for return *)
@@ -274,7 +274,7 @@ let verifParent (classe : classVerifType) (extends : Ast.extendType) (classes : 
     match parent.constructeur with
     | None -> if List.length params <> 0 then raise (VC_Error "Parent class doesn't have a constructor")
     | Some cons -> (if (List.length cons.parametre) <> (List.length params) then raise (VC_Error "Non matching constructor"));
-                   List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if (verifExpr carg classes objects variables) <> Some marg.typeVar then raise (VC_Error "Non matching constructor")) (snd extends) cons.parametre;
+                   List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if optClassName (verifExpr carg classes objects variables) <> marg.typeVar.name then raise (VC_Error "Non matching constructor")) (snd extends) cons.parametre;
                    List.iter (fun x -> classe.champs <- x :: classe.champs; globalFieldOff := !globalFieldOff+1) parent.champs;
                    List.iter (fun x -> classe.methode <- x :: classe.methode; globalMethodOff := !globalMethodOff+1) parent.methode
 
@@ -282,6 +282,7 @@ let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : o
     globalMethodOff := 0;
     globalFieldOff := 1;
     match cl with (obj, name, args, ext, bl, inner) ->
+        (* TODO: forgot to check if class/object already exists *)
     if obj then verifObject cl classes objects else begin
         Printf.printf "In verifClass %s\n" name;
         let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = None; parent = None} in
@@ -290,8 +291,8 @@ let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : o
         List.iter (fun f -> verifField f newclass classes) (fst inner);
         List.iter (fun m -> addMethod m newclass classes) (snd inner);
         let i : int ref = ref 0 in
-        let cons_params = List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) [] args in
-        (match bl with None -> () | Some b -> verifBloc b (newclass::classes) objects ({name = "this"; typeVar = newclass; offset = L(-(List.length args))}::cons_params));
+        let cons_params = List.fold_right (fun x acc -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (newclass::classes); offset = L(!i)}::acc ) args [] in
+        (match bl with None -> () | Some b -> verifBloc b (newclass::classes) objects ({name = "this"; typeVar = newclass; offset = L(-(List.length args)-1)}::cons_params));
         newclass.constructeur <- (match bl with None -> None | Some b -> Some {name = "_constructor_"; returnType = Some newclass; parametre = cons_params; offset = -1});
         List.iter (fun m -> verifMethodBody m (newclass::classes) objects (getMethod (methodName m) (newclass.methode)).parametre true) (snd inner);
         globalClassId := !globalClassId + 1;

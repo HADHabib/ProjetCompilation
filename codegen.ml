@@ -10,7 +10,7 @@ let getClassSize name =
 let genGet off name =
   (match off with | O(i) -> Printf.printf "    LOAD %d -- %s\n" i name | G(i) -> Printf.printf "    PUSHG %d -- %s\n" i name | L(i) -> Printf.printf "    PUSHL %d -- %s\n" i name)
 let genStore off name =
-  (match off with | O(i) -> Printf.printf "    STORE %d -- %s\n" i name | G(i) -> Printf.printf "    STOREG %d -- %s\n" i name | L(i) -> Printf.printf "    STOREL %d -- %s\n" i name)
+  (match off with | O(i) -> Printf.printf "    SWAP\n    STORE %d -- %s\n" i name | G(i) -> Printf.printf "    STOREG %d -- %s\n" i name | L(i) -> Printf.printf "    STOREL %d -- %s\n" i name)
 
 let rec genGetVal v =
     match v with
@@ -102,6 +102,7 @@ let genConstructor n a b p =
          genStaticCall ((fst parent) ^ "__constructor") (snd parent) false;
          Printf.printf "    POPN 1 -- remove ptr\n"
     );
+    Printf.printf "    PUSHL %d -- ptr\n" (-(List.length a) - 1);
     Printf.printf "    PUSHG %d -- Vtable_%s\n    STORE 0\n" !globalClassId n; (* store VTable at offset 0 *)
     (match b with
      | None -> ()
@@ -114,19 +115,27 @@ let genConstructor n a b p =
 let genGetter c f =
     let cl = getClass c in
     let off = let i = ref 0 in let j = ref 0 in match cl with (_,_,_,_,_,inn) -> List.iter (fun fi -> match fi with (_,n,_) -> (if n=f then i := !j else ()); j := !j+1) (fst inn); !i in
-    Printf.printf "%s_%s: PUSHL -1\n    LOAD %d\n    STOREL -2\n    RETURN\n\n" c f off
+    Printf.printf "%s_%s: PUSHL -1\n    LOAD %d\n    STOREL -2\n    RETURN\n\n" c f (off+1)
+
+let getVtableSize inner =
+    let i = ref 0 in
+    List.iter (fun f -> match f with (a, _, _) -> if a then i := !i + 1) (fst inner);
+    !i + (List.length (snd inner))
 
 let preGenClass cl =
     match cl with (obj, name, _, _, _, inner) -> begin
         if obj then begin (* construct static instance *)
-            Printf.printf "    ALLOC %d\n" (getClassSize name); genStaticCall (name ^ "__constructor") [] false;
+            Printf.printf "    PUSHN 1\n    ALLOC %d\n" (getClassSize name); genStaticCall (name ^ "__constructor") [] false;
             Printf.printf "    STOREG %d\n" !globalClassId;
         end else begin (* create VTable *)
-            Printf.printf "    ALLOC %d\n    DUPN %d\n" (List.length (snd inner)) (List.length (snd inner));
+
+            Printf.printf "    PUSHN 1\n    ALLOC %d\n" (getVtableSize inner);
             (* TODO: getters in VTable + redefinitions*)
-            let i = ref 0 in List.iter (fun m -> (match m with
-                                              | Calc(_, n, _, _, _) -> Printf.printf "    PUSHA %s_%s\n    STORE %d\n" name n !i
-                                              | Body(_, n, _, _, _) -> Printf.printf "    PUSHA %s_%s\n    STORE %d\n" name n !i);
+            let i = ref 0 in
+            List.iter (fun f -> match f with (a, n, _) -> if a then (Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i; i := !i + 1)) (fst inner);
+            List.iter (fun m -> (match m with
+                                              | Calc(_, n, _, _, _) -> Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i
+                                              | Body(_, n, _, _, _) -> Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i);
                                               i := !i + 1) (snd inner);
             Printf.printf "    STOREG %d\n" !globalClassId;
         end

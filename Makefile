@@ -8,6 +8,11 @@ tp: tpParse.mli $(SOURCES)
 	ocamlc -g $(INTERFACES)
 	ocamlc -g -o tp $(SOURCES)
 
+testLex : tpParse.mli tpLex.ml testLex.ml ast.mli
+	ocamlc -c ast.ml
+	ocamlc $(INTERFACES)
+	ocamlc -o testLex ast.ml misc.ml tpParse.ml  tpLex.ml testLex.ml
+
 ast.mli: ast.ml
 	ocamlc -g -c ast.ml
 

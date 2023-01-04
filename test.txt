@@ -4,11 +4,14 @@ class Point(xc: Integer, yc: Integer) {
 } is {
     var auto x : Integer;
     var auto y : Integer;
+
+    def print() is {
+        ("Point {x: " & this.x.toString() & ", y: " & this.y.toString() & "}").println();
+    }
 }
 
 {
     x : Point; is
-    x = new Point(1, 2);
-    x.x().toString().println();
-    x.y().toString().println();
+    x := new Point(1, 2);
+    x.print();
 }
