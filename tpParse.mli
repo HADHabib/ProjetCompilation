@@ -5,6 +5,7 @@ type token =
   | VAR
   | UPLUS
   | UMINUS
+  | TYPENAME of (string)
   | TIMES
   | THEN
   | STRING of (string)
@@ -15,7 +16,6 @@ type token =
   | RCBRACE
   | PLUS
   | OVERRIDE
-  | OR
   | OBJECT
   | NOT
   | NEW
@@ -38,7 +38,6 @@ type token =
   | CLASS
   | AUTO
   | ASSIGN
-  | AND
 
 (* This exception is raised by the monolithic API functions. *)
 

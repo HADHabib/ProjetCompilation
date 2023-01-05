@@ -51,7 +51,10 @@ class Point(xc: Integer, yc: Integer)
    /* On memorise le dernier clone construit à partir de cet objet
     * si on voulait on pourrait le chainer a la fin de la liste des clones
     */
-    this.clone := new Point(this.x, this.y, this.name & "'");
+    // Erreur Ici ???
+    // this.clone := new Point(this.x, this.y, this.name & "'");
+    this.clone := new Point(this.x, this.y);
+    this.clone.setName(this.name & "'");
     result := this.clone;
   }
 

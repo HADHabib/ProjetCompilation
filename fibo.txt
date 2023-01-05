@@ -1,0 +1,17 @@
+object Fibo is {
+    def run(i : Integer) : Integer is {
+        if (i <= 1) then { result := 1; }
+        else {
+            result := Fibo.run(i-1) + Fibo.run(i-2);
+        }
+    }
+}
+
+{
+    "Fibo(10) : ".print();
+    Fibo.run(10).toString().println();
+    "Fibo(15) : ".print();
+    Fibo.run(15).toString().println();
+    "Fibo(20) : ".print();
+    Fibo.run(20).toString().println();
+}

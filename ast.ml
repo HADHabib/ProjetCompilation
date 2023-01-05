@@ -20,11 +20,11 @@ and expType =
 | Div of expType*expType
 | UMinus of expType
 | Comp of expType * opComp * expType
-| And of expType * expType
-| Or of expType * expType
 | Not of expType
 | Concat of expType * expType
 | Inst of string * (expType list)
+| Cast of string * expType
+| EmptyExpr
 
 type declType = (string list) * string
 
@@ -77,19 +77,19 @@ let printAST ast =
     | Times(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " * "; printExpr e2; Printf.printf ")"
     | Minus(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " - "; printExpr e2; Printf.printf ")"
     | Div(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " / "; printExpr e2; Printf.printf ")"
-    | And(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " and "; printExpr e2; Printf.printf ")"
-    | Or(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " or "; printExpr e2; Printf.printf ")"
     | Concat(e1, e2) -> Printf.printf "("; printExpr e1; Printf.printf " & "; printExpr e2; Printf.printf ")"
     | UMinus(e) -> Printf.printf "-"; printExpr e
     | Not(e) -> Printf.printf "not "; printExpr e
     | Inst(n, a) -> Printf.printf "new %s(" n; printSeparated a printExpr ", "; Printf.printf ")"
-    | Comp(e1, c, e2) -> match c with
+    | Cast(t, e) -> Printf.printf "(%s " t; printExpr e; Printf.printf ")";
+    | Comp(e1, c, e2) -> (match c with
     | Eq -> Printf.printf "("; printExpr e1; Printf.printf " = "; printExpr e2; Printf.printf ")"
     | Neq -> Printf.printf "("; printExpr e1; Printf.printf " <> "; printExpr e2; Printf.printf ")"
     | Lt -> Printf.printf "("; printExpr e1; Printf.printf " < "; printExpr e2; Printf.printf ")"
     | Le -> Printf.printf "("; printExpr e1; Printf.printf " <= "; printExpr e2; Printf.printf ")"
     | Gt -> Printf.printf "("; printExpr e1; Printf.printf " > "; printExpr e2; Printf.printf ")"
-    | Ge -> Printf.printf "("; printExpr e1; Printf.printf " >= "; printExpr e2; Printf.printf ")"
+    | Ge -> Printf.printf "("; printExpr e1; Printf.printf " >= "; printExpr e2; Printf.printf ")")
+    | _ -> ()
   in
   let printParams pl = printSeparated pl (fun p -> Printf.printf "%s: %s" (fst p) (snd p)) ", " in
   let printExtend e = Printf.printf "extends %s(" (fst e); printSeparated (snd e) printExpr ", "; Printf.printf ") " in

@@ -2,6 +2,7 @@
 open Ast
 %}
 %token <string> ID
+%token <string> TYPENAME
 %token <int> CSTE
 %token <string> STRING
 %token <Ast.opComp> RELOP
@@ -12,7 +13,7 @@ open Ast
 %token CLASS EXTENDS OBJECT IS VAR DEF OVERRIDE AUTO NEW RETURN
 %token ASSIGN
 %token IF THEN ELSE
-%token AND OR NOT
+%token NOT
 %token EOF
 
 %type <expType> expr
@@ -31,10 +32,8 @@ open Ast
 %type <classType> class_
 %type <classType> object_
 %type <string> retType
+%type <expType> cast
 
-
-%left OR
-%left AND
 %left RELOP
 %left CONCAT
 %left PLUS MINUS
@@ -53,29 +52,29 @@ prog: classes = list(classOrObject) code = bloc EOF { (classes, code) }
 classOrObject: c = class_ { c }
              | o = object_ { o }
 
-class_: CLASS name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) e = option(extends) cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (false, name, params, e, cons, i) }
+class_: CLASS name = TYPENAME params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) e = option(extends) cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (false, name, params, e, cons, i) }
 
-object_: OBJECT name = ID cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (true, name, [], None, cons, i) }
+object_: OBJECT name = TYPENAME cons = option(bloc) IS i = delimited(LCBRACE, classIn, RCBRACE) { (true, name, [], None, cons, i) }
 
-extends: EXTENDS name = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { (name, args) }
+extends: EXTENDS name = TYPENAME args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { (name, args) }
 
 classIn: f = list(field) m = list(method_) { (f, m) }
 
-field: VAR a = boption(AUTO) name = ID COLON t = ID SEMICOLON { (a, name, t) }
+field: VAR a = boption(AUTO) name = ID COLON t = TYPENAME SEMICOLON { (a, name, t) }
 
-retType: COLON t = ID { t }
+retType: COLON t = TYPENAME { t }
 
-method_: DEF o = boption(OVERRIDE) name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) COLON ret = ID ASSIGN e = expr { Calc(o, name, params, ret, e) }
+method_: DEF o = boption(OVERRIDE) name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) COLON ret = TYPENAME ASSIGN e = expr { Calc(o, name, params, ret, e) }
        | DEF o = boption(OVERRIDE) name = ID params = delimited(LPAREN, separated_list(COMMA, param), RPAREN) ret = option(retType) IS b = bloc { Body(o, name, params, ret, b) }
 
-param: name = ID COLON t = ID { (name, t) }
+param: name = ID COLON t = TYPENAME { (name, t) }
 
 blocWDecl: decls = list(decl) IS instrs = list(instr) { (decls, instrs) }
 
 bloc: instrs = delimited(LCBRACE, list(instr), RCBRACE) { ([], instrs) }
     | b = delimited(LCBRACE, blocWDecl, RCBRACE) { b }
 
-decl: names = separated_nonempty_list(COMMA, ID) COLON t = ID SEMICOLON { (names, t) }
+decl: names = separated_nonempty_list(COMMA, ID) COLON t = TYPENAME SEMICOLON { (names, t) }
 
 instr: e = expr SEMICOLON { Expr(e) }
      | b = bloc           { Bloc(b) }
@@ -90,19 +89,20 @@ valueFst: i = ID { Id({name = i; off = O(0)}) }
 value: v = valueFst { v }
      | e = expr DOT i = ID { Access({left = e; name = i; off = O(0)}) }
      | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)  { Method({left = e; name = f; args = args; vTableId = 0; objectName = ""; pushLeft = true}) }
-
+     | o = TYPENAME DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Method({left = EmptyExpr; name = f; args = args; vTableId = -1; objectName = o; pushLeft = false}) }
 
 expr: v = value                       { Val(v) }
     | e1 = expr PLUS  e2 = expr       { Plus (e1, e2) }
     | e1 = expr MINUS e2 = expr       { Minus(e1, e2) }
     | e1 = expr TIMES e2 = expr       { Times(e1, e2) }
     | e1 = expr  DIV  e2 = expr       { Div  (e1, e2) }
-    | e1 = expr  AND  e2 = expr       { And  (e1, e2) }
-    | e1 = expr  OR   e2 = expr       { Or   (e1, e2) }
     | e1 = expr op = RELOP e2 = expr  { Comp (e1, op, e2) }
     | NOT e = expr                    { Not  (e)      }
     | MINUS e = expr %prec UMINUS     { UMinus(e)     }
     | PLUS e = expr %prec UPLUS           { e }
     | e = delimited(LPAREN, expr, RPAREN) { e }
     | e1 = expr CONCAT e2 = expr      { Concat(e1, e2) }
-    | NEW cl = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Inst(cl, args) }
+    | NEW cl = TYPENAME args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Inst(cl, args) }
+    | c = delimited(LPAREN, cast, RPAREN) { c }
+
+cast: t = TYPENAME e = expr { Cast(t, e) }

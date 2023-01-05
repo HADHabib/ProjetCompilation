@@ -10,8 +10,21 @@ class Point(xc: Integer, yc: Integer) {
     }
 }
 
+object Printer { this.string := "Hello, World!"; this.pt := new Point(3+3, 4/2+8); } is {
+    var string : String;
+    var pt : Point;
+    def print() is { this.string.println(); }
+    def point() : Point := this.pt
+    def getPoint() : Point is { result := this.pt; }
+}
+
 {
     x : Point; is
     x := new Point(1, 2);
     x.print();
+    Printer.print();
+    Printer.point().print();
+    x := Printer.getPoint();
+    x.x().toString().print();
+    " -> x.x\n".print();
 }

@@ -26,14 +26,14 @@ let _ =
         "then", THEN;
         "else", ELSE;
         "not", NOT;
-        "and", AND;
-        "or", OR
       ]
 
 }
 
 (* abréviation utiles pour les expressions rationnelles *)
-let lettre = ['A'-'Z' 'a'-'z']
+let minuscule = ['a'-'z']
+let majuscule = ['A'-'Z']
+let lettre = (minuscule | majuscule)
 let chiffre = ['0'-'9']
 let chiffreHex = (chiffre | ['A'-'F' 'a'-'f'])
 let LC = ( chiffre | lettre )
@@ -50,7 +50,8 @@ let stringchar = (escapesequence | [^ '\\' '"'])
  *)
 rule
   token = parse (* a completer *)
-   lettre LC * as id     { try Hashtbl.find keyword_table id with Not_found -> ID id }
+    minuscule LC * as id     { try Hashtbl.find keyword_table id with Not_found -> ID id }
+  | majuscule LC * as id { TYPENAME id }
   | [' ''\t''\r']        { token lexbuf }     (* skip blanks *)
   | '\n'                 { next_line lexbuf; token lexbuf}
   | "/*"                 {
@@ -85,8 +86,6 @@ rule
   | '('                  { LPAREN }
   | ')'                  { RPAREN }
   | ';'                  { SEMICOLON }
-  | "&&"                 { AND }
-  | "||"                 { OR  }
   | "!"                  { NOT }
   | eof                  { EOF }
   | _ as lxm             { (* On met un message et on essaye de scanner la

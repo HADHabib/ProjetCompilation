@@ -12,8 +12,6 @@ let output token =
     | MINUS     -> "operateur -"
     | TIMES     -> "operateur *"
     | DIV       -> "operateur /"
-    | AND       -> "operateur and"
-    | OR        -> "operateur or"
     | NOT       -> "operateur not"
     | CONCAT    -> "operateur &"
     | SEMICOLON -> "symbole ;"

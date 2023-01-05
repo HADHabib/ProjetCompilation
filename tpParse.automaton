@@ -5,12 +5,12 @@ State 0:
 prog' -> . prog [ # ]
 ## Transitions:
 -- On OBJECT shift to state 1
--- On CLASS shift to state 123
--- On prog shift to state 140
--- On object_ shift to state 141
--- On list(classOrObject) shift to state 142
--- On class_ shift to state 145
--- On classOrObject shift to state 146
+-- On CLASS shift to state 129
+-- On prog shift to state 146
+-- On object_ shift to state 147
+-- On list(classOrObject) shift to state 148
+-- On class_ shift to state 151
+-- On classOrObject shift to state 152
 ## Reductions:
 -- On LCBRACE
 --   reduce production list(classOrObject) ->
@@ -19,20 +19,20 @@ State 1:
 ## Known stack suffix:
 ## OBJECT
 ## LR(1) items:
-object_ -> OBJECT . ID option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT . TYPENAME option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On ID shift to state 2
+-- On TYPENAME shift to state 2
 ## Reductions:
 
 State 2:
 ## Known stack suffix:
-## OBJECT ID
+## OBJECT TYPENAME
 ## LR(1) items:
-object_ -> OBJECT ID . option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME . option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
 -- On LCBRACE shift to state 3
--- On option(bloc) shift to state 82
--- On bloc shift to state 122
+-- On option(bloc) shift to state 88
+-- On bloc shift to state 128
 ## Reductions:
 -- On IS
 --   reduce production option(bloc) ->
@@ -41,30 +41,31 @@ State 3:
 ## Known stack suffix:
 ## LCBRACE
 ## LR(1) items:
-bloc -> LCBRACE . list(instr) RCBRACE [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
-bloc -> LCBRACE . blocWDecl RCBRACE [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE . list(instr) RCBRACE [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE . blocWDecl RCBRACE [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
 ## Transitions:
--- On STRING shift to state 4
--- On RETURN shift to state 5
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On RETURN shift to state 54
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
 -- On LCBRACE shift to state 3
--- On IF shift to state 50
--- On ID shift to state 63
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 53
--- On separated_nonempty_list(COMMA,ID) shift to state 67
--- On list(instr) shift to state 71
--- On list(decl) shift to state 73
--- On instr shift to state 76
--- On expr shift to state 60
--- On decl shift to state 78
--- On blocWDecl shift to state 80
--- On bloc shift to state 62
+-- On IF shift to state 56
+-- On ID shift to state 69
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 59
+-- On separated_nonempty_list(COMMA,ID) shift to state 73
+-- On list(instr) shift to state 77
+-- On list(decl) shift to state 79
+-- On instr shift to state 82
+-- On expr shift to state 66
+-- On decl shift to state 84
+-- On blocWDecl shift to state 86
+-- On bloc shift to state 68
 ## Reductions:
 -- On IS
 --   reduce production list(decl) ->
@@ -73,304 +74,362 @@ bloc -> LCBRACE . blocWDecl RCBRACE [ STRING RETURN RCBRACE PLUS NOT NEW MINUS L
 
 State 4:
 ## Known stack suffix:
-## STRING
+## TYPENAME
 ## LR(1) items:
-valueFst -> STRING . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
+value -> TYPENAME . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
+-- On DOT shift to state 5
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production valueFst -> STRING
 
 State 5:
 ## Known stack suffix:
-## RETURN
+## TYPENAME DOT
 ## LR(1) items:
-instr -> RETURN . SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> TYPENAME DOT . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On SEMICOLON shift to state 6
+-- On ID shift to state 6
 ## Reductions:
 
 State 6:
 ## Known stack suffix:
-## RETURN SEMICOLON
+## TYPENAME DOT ID
 ## LR(1) items:
-instr -> RETURN SEMICOLON . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> TYPENAME DOT ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
+-- On LPAREN shift to state 7
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
---   reduce production instr -> RETURN SEMICOLON
 
 State 7:
 ## Known stack suffix:
-## PLUS
+## TYPENAME DOT ID LPAREN
 ## LR(1) items:
-expr -> PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> TYPENAME DOT ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 49
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On separated_nonempty_list(COMMA,expr) shift to state 27
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 52
+-- On expr shift to state 30
 ## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
 State 8:
 ## Known stack suffix:
-## NOT
+## STRING
 ## LR(1) items:
-expr -> NOT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+valueFst -> STRING . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 48
 ## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production valueFst -> STRING
 
 State 9:
 ## Known stack suffix:
-## NEW
+## PLUS
 ## LR(1) items:
-expr -> NEW . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On ID shift to state 10
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 51
 ## Reductions:
 
 State 10:
 ## Known stack suffix:
-## NEW ID
+## NOT
 ## LR(1) items:
-expr -> NEW ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NOT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On LPAREN shift to state 11
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 50
 ## Reductions:
 
 State 11:
 ## Known stack suffix:
-## NEW ID LPAREN
+## NEW
 ## LR(1) items:
-expr -> NEW ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NEW . TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 24
--- On loption(separated_nonempty_list(COMMA,expr)) shift to state 46
--- On expr shift to state 27
+-- On TYPENAME shift to state 12
 ## Reductions:
--- On RPAREN
---   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
 State 12:
 ## Known stack suffix:
-## MINUS
+## NEW TYPENAME
 ## LR(1) items:
-expr -> MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NEW TYPENAME . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
 -- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 45
 ## Reductions:
 
 State 13:
 ## Known stack suffix:
-## LPAREN
+## NEW TYPENAME LPAREN
 ## LR(1) items:
-expr -> LPAREN . expr RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NEW TYPENAME LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 18
-## Reductions:
-
-State 14:
-## Known stack suffix:
-## ID
-## LR(1) items:
-valueFst -> ID . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production valueFst -> ID
-
-State 15:
-## Known stack suffix:
-## CSTE
-## LR(1) items:
-valueFst -> CSTE . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production valueFst -> CSTE
-
-State 16:
-## Known stack suffix:
-## valueFst
-## LR(1) items:
-value -> valueFst . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production value -> valueFst
-
-State 17:
-## Known stack suffix:
-## value
-## LR(1) items:
-expr -> value . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
---   reduce production expr -> value
-
-State 18:
-## Known stack suffix:
-## LPAREN expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> LPAREN expr . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-value -> expr . DOT ID [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-## Transitions:
--- On TIMES shift to state 19
--- On RPAREN shift to state 44
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
-## Reductions:
-
-State 19:
-## Known stack suffix:
-## expr TIMES
-## LR(1) items:
-expr -> expr TIMES . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 20
-## Reductions:
-
-State 20:
-## Known stack suffix:
-## expr TIMES expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr TIMES expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-## Transitions:
--- On DOT shift to state 21
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> expr TIMES expr
-
-State 21:
-## Known stack suffix:
-## expr DOT
-## LR(1) items:
-value -> expr DOT . ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-value -> expr DOT . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
--- On ID shift to state 22
-## Reductions:
-
-State 22:
-## Known stack suffix:
-## expr DOT ID
-## LR(1) items:
-value -> expr DOT ID . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-value -> expr DOT ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
--- On LPAREN shift to state 23
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production value -> expr DOT ID
-
-State 23:
-## Known stack suffix:
-## expr DOT ID LPAREN
-## LR(1) items:
-value -> expr DOT ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 24
--- On loption(separated_nonempty_list(COMMA,expr)) shift to state 25
--- On expr shift to state 27
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On separated_nonempty_list(COMMA,expr) shift to state 27
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 48
+-- On expr shift to state 30
 ## Reductions:
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
+State 14:
+## Known stack suffix:
+## MINUS
+## LR(1) items:
+expr -> MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 47
+## Reductions:
+
+State 15:
+## Known stack suffix:
+## LPAREN
+## LR(1) items:
+expr -> LPAREN . expr RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> LPAREN . cast RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+## Transitions:
+-- On TYPENAME shift to state 16
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 43
+-- On cast shift to state 45
+## Reductions:
+
+State 16:
+## Known stack suffix:
+## TYPENAME
+## LR(1) items:
+cast -> TYPENAME . expr [ RPAREN ]
+value -> TYPENAME . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On DOT shift to state 5
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 21
+## Reductions:
+
+State 17:
+## Known stack suffix:
+## ID
+## LR(1) items:
+valueFst -> ID . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production valueFst -> ID
+
+State 18:
+## Known stack suffix:
+## CSTE
+## LR(1) items:
+valueFst -> CSTE . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production valueFst -> CSTE
+
+State 19:
+## Known stack suffix:
+## valueFst
+## LR(1) items:
+value -> valueFst . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production value -> valueFst
+
+State 20:
+## Known stack suffix:
+## value
+## LR(1) items:
+expr -> value . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+## Transitions:
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA
+--   reduce production expr -> value
+
+State 21:
+## Known stack suffix:
+## TYPENAME expr
+## LR(1) items:
+cast -> TYPENAME expr . [ RPAREN ]
+expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+## Transitions:
+-- On TIMES shift to state 22
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
+## Reductions:
+-- On RPAREN
+--   reduce production cast -> TYPENAME expr
+
+State 22:
+## Known stack suffix:
+## expr TIMES
+## LR(1) items:
+expr -> expr TIMES . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 23
+## Reductions:
+
+State 23:
+## Known stack suffix:
+## expr TIMES expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr TIMES expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+## Transitions:
+-- On DOT shift to state 24
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DIV DEF CONCAT COMMA
+--   reduce production expr -> expr TIMES expr
+
 State 24:
+## Known stack suffix:
+## expr DOT
+## LR(1) items:
+value -> expr DOT . ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+value -> expr DOT . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+-- On ID shift to state 25
+## Reductions:
+
+State 25:
+## Known stack suffix:
+## expr DOT ID
+## LR(1) items:
+value -> expr DOT ID . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+value -> expr DOT ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+-- On LPAREN shift to state 26
+## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production value -> expr DOT ID
+
+State 26:
+## Known stack suffix:
+## expr DOT ID LPAREN
+## LR(1) items:
+value -> expr DOT ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
+## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On separated_nonempty_list(COMMA,expr) shift to state 27
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 28
+-- On expr shift to state 30
+## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
+
+State 27:
 ## Known stack suffix:
 ## separated_nonempty_list(COMMA,expr)
 ## LR(1) items:
@@ -380,383 +439,282 @@ loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,ex
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,expr)) -> separated_nonempty_list(COMMA,expr)
 
-State 25:
+State 28:
 ## Known stack suffix:
 ## expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
-value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
+value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On RPAREN shift to state 26
-## Reductions:
-
-State 26:
-## Known stack suffix:
-## expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
-## LR(1) items:
-value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND ]
-## Transitions:
-## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA ASSIGN AND
---   reduce production value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
-
-State 27:
-## Known stack suffix:
-## expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-separated_nonempty_list(COMMA,expr) -> expr . [ RPAREN ]
-separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAREN ]
-value -> expr . DOT ID [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS OR MINUS DOT DIV CONCAT COMMA AND ]
-## Transitions:
--- On TIMES shift to state 19
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On COMMA shift to state 42
--- On AND shift to state 40
-## Reductions:
--- On RPAREN
---   reduce production separated_nonempty_list(COMMA,expr) -> expr
-
-State 28:
-## Known stack suffix:
-## expr RELOP
-## LR(1) items:
-expr -> expr RELOP . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 29
+-- On RPAREN shift to state 29
 ## Reductions:
 
 State 29:
 ## Known stack suffix:
-## expr RELOP expr
+## expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr RELOP expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On TIMES shift to state 19
--- On PLUS shift to state 30
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
 ## Reductions:
--- On THEN SEMICOLON RPAREN RELOP RCBRACE OR DEF COMMA AND
---   reduce production expr -> expr RELOP expr
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production value -> expr DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
 State 30:
 ## Known stack suffix:
-## expr PLUS
+## expr
 ## LR(1) items:
-expr -> expr PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+separated_nonempty_list(COMMA,expr) -> expr . [ RPAREN ]
+separated_nonempty_list(COMMA,expr) -> expr . COMMA separated_nonempty_list(COMMA,expr) [ RPAREN ]
+value -> expr . DOT ID [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 31
+-- On TIMES shift to state 22
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
+-- On COMMA shift to state 41
 ## Reductions:
+-- On RPAREN
+--   reduce production separated_nonempty_list(COMMA,expr) -> expr
 
 State 31:
 ## Known stack suffix:
-## expr PLUS expr
+## expr RELOP
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr RELOP . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On TIMES shift to state 19
--- On DOT shift to state 21
--- On DIV shift to state 32
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 32
 ## Reductions:
--- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DEF CONCAT COMMA AND
---   reduce production expr -> expr PLUS expr
 
 State 32:
 ## Known stack suffix:
-## expr DIV
+## expr RELOP expr
 ## LR(1) items:
-expr -> expr DIV . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr RELOP expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 33
+-- On TIMES shift to state 22
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
 ## Reductions:
+-- On THEN SEMICOLON RPAREN RELOP RCBRACE DEF COMMA
+--   reduce production expr -> expr RELOP expr
 
 State 33:
 ## Known stack suffix:
-## expr DIV expr
+## expr PLUS
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr DIV expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr PLUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On DOT shift to state 21
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 34
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> expr DIV expr
 
 State 34:
 ## Known stack suffix:
-## expr MINUS
+## expr PLUS expr
 ## LR(1) items:
-expr -> expr MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 35
+-- On TIMES shift to state 22
+-- On DOT shift to state 24
+-- On DIV shift to state 35
 ## Reductions:
+-- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DEF CONCAT COMMA
+--   reduce production expr -> expr PLUS expr
 
 State 35:
 ## Known stack suffix:
-## expr MINUS expr
+## expr DIV
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr DIV . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On TIMES shift to state 19
--- On DOT shift to state 21
--- On DIV shift to state 32
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 36
 ## Reductions:
--- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DEF CONCAT COMMA AND
---   reduce production expr -> expr MINUS expr
 
 State 36:
 ## Known stack suffix:
-## expr CONCAT
+## expr DIV expr
 ## LR(1) items:
-expr -> expr CONCAT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr DIV expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 37
+-- On DOT shift to state 24
 ## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DIV DEF CONCAT COMMA
+--   reduce production expr -> expr DIV expr
 
 State 37:
 ## Known stack suffix:
-## expr CONCAT expr
+## expr MINUS
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr CONCAT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr MINUS . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On TIMES shift to state 19
--- On PLUS shift to state 30
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 38
 ## Reductions:
--- On THEN SEMICOLON RPAREN RELOP RCBRACE OR DEF CONCAT COMMA AND
---   reduce production expr -> expr CONCAT expr
 
 State 38:
 ## Known stack suffix:
-## expr OR
+## expr MINUS expr
 ## LR(1) items:
-expr -> expr OR . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 39
+-- On TIMES shift to state 22
+-- On DOT shift to state 24
+-- On DIV shift to state 35
 ## Reductions:
+-- On THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DEF CONCAT COMMA
+--   reduce production expr -> expr MINUS expr
 
 State 39:
 ## Known stack suffix:
-## expr OR expr
+## expr CONCAT
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr OR expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr CONCAT . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On TIMES shift to state 19
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 40
 ## Reductions:
--- On THEN SEMICOLON RPAREN RCBRACE OR DEF COMMA
---   reduce production expr -> expr OR expr
 
 State 40:
 ## Known stack suffix:
-## expr AND
+## expr CONCAT expr
 ## LR(1) items:
-expr -> expr AND . expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr CONCAT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 41
+-- On TIMES shift to state 22
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
 ## Reductions:
+-- On THEN SEMICOLON RPAREN RELOP RCBRACE DEF CONCAT COMMA
+--   reduce production expr -> expr CONCAT expr
 
 State 41:
-## Known stack suffix:
-## expr AND expr
-## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr AND expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-## Transitions:
--- On TIMES shift to state 19
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
-## Reductions:
--- On THEN SEMICOLON RPAREN RCBRACE OR DEF COMMA AND
---   reduce production expr -> expr AND expr
-
-State 42:
 ## Known stack suffix:
 ## expr COMMA
 ## LR(1) items:
 separated_nonempty_list(COMMA,expr) -> expr COMMA . separated_nonempty_list(COMMA,expr) [ RPAREN ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 43
--- On expr shift to state 27
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On separated_nonempty_list(COMMA,expr) shift to state 42
+-- On expr shift to state 30
 ## Reductions:
 
-State 43:
+State 42:
 ## Known stack suffix:
 ## expr COMMA separated_nonempty_list(COMMA,expr)
 ## LR(1) items:
@@ -766,367 +724,434 @@ separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,
 -- On RPAREN
 --   reduce production separated_nonempty_list(COMMA,expr) -> expr COMMA separated_nonempty_list(COMMA,expr)
 
+State 43:
+## Known stack suffix:
+## LPAREN expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . MINUS expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . TIMES expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . DIV expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . RELOP expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> LPAREN expr . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RPAREN RELOP PLUS MINUS DOT DIV CONCAT ]
+## Transitions:
+-- On TIMES shift to state 22
+-- On RPAREN shift to state 44
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
+## Reductions:
+
 State 44:
 ## Known stack suffix:
 ## LPAREN expr RPAREN
 ## LR(1) items:
-expr -> LPAREN expr RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> LPAREN expr RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA
 --   reduce production expr -> LPAREN expr RPAREN
 
 State 45:
 ## Known stack suffix:
-## MINUS expr
+## LPAREN cast
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> LPAREN cast . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On DOT shift to state 21
+-- On RPAREN shift to state 46
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> MINUS expr
 
 State 46:
 ## Known stack suffix:
-## NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr))
+## LPAREN cast RPAREN
 ## LR(1) items:
-expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> LPAREN cast RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On RPAREN shift to state 47
 ## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA
+--   reduce production expr -> LPAREN cast RPAREN
 
 State 47:
 ## Known stack suffix:
-## NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
+## MINUS expr
 ## LR(1) items:
-expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> MINUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
+-- On DOT shift to state 24
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND
---   reduce production expr -> NEW ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DIV DEF CONCAT COMMA
+--   reduce production expr -> MINUS expr
 
 State 48:
 ## Known stack suffix:
-## NOT expr
+## NEW TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> NOT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NEW TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On DOT shift to state 21
+-- On RPAREN shift to state 49
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> NOT expr
 
 State 49:
 ## Known stack suffix:
-## PLUS expr
+## NEW TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . AND expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . OR expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT COMMA AND ]
+expr -> NEW TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On DOT shift to state 21
 ## Reductions:
--- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS OR MINUS DIV DEF CONCAT COMMA AND
---   reduce production expr -> PLUS expr
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA
+--   reduce production expr -> NEW TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
 State 50:
 ## Known stack suffix:
-## IF
+## NOT expr
 ## LR(1) items:
-instr -> IF . expr THEN instr ELSE instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> NOT expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 51
+-- On DOT shift to state 24
 ## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DIV DEF CONCAT COMMA
+--   reduce production expr -> NOT expr
 
 State 51:
 ## Known stack suffix:
-## IF expr
+## PLUS expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-instr -> IF expr . THEN instr ELSE instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
-value -> expr . DOT ID [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . MINUS expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . TIMES expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . DIV expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . RELOP expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> PLUS expr . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+expr -> expr . CONCAT expr [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ]
 ## Transitions:
--- On TIMES shift to state 19
--- On THEN shift to state 52
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
+-- On DOT shift to state 24
 ## Reductions:
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DIV DEF CONCAT COMMA
+--   reduce production expr -> PLUS expr
 
 State 52:
 ## Known stack suffix:
-## IF expr THEN
+## TYPENAME DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
-instr -> IF expr THEN . instr ELSE instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> TYPENAME DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On STRING shift to state 4
--- On RETURN shift to state 5
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On LCBRACE shift to state 3
--- On IF shift to state 50
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 53
--- On instr shift to state 57
--- On expr shift to state 60
--- On bloc shift to state 62
+-- On RPAREN shift to state 53
 ## Reductions:
 
 State 53:
 ## Known stack suffix:
-## value
+## TYPENAME DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
-expr -> value . [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-instr -> value . ASSIGN expr SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> TYPENAME DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN ]
 ## Transitions:
--- On ASSIGN shift to state 54
 ## Reductions:
--- On TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND
---   reduce production expr -> value
+-- On TIMES THEN SEMICOLON RPAREN RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT COMMA ASSIGN
+--   reduce production value -> TYPENAME DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
 State 54:
 ## Known stack suffix:
-## value ASSIGN
+## RETURN
 ## LR(1) items:
-instr -> value ASSIGN . expr SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+instr -> RETURN . SEMICOLON [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 55
+-- On SEMICOLON shift to state 55
 ## Reductions:
 
 State 55:
 ## Known stack suffix:
-## value ASSIGN expr
+## RETURN SEMICOLON
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-instr -> value ASSIGN expr . SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
-value -> expr . DOT ID [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
+instr -> RETURN SEMICOLON . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
--- On TIMES shift to state 19
--- On SEMICOLON shift to state 56
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
 ## Reductions:
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
+--   reduce production instr -> RETURN SEMICOLON
 
 State 56:
 ## Known stack suffix:
-## value ASSIGN expr SEMICOLON
+## IF
 ## LR(1) items:
-instr -> value ASSIGN expr SEMICOLON . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+instr -> IF . expr THEN instr ELSE instr [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 57
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
---   reduce production instr -> value ASSIGN expr SEMICOLON
 
 State 57:
 ## Known stack suffix:
-## IF expr THEN instr
+## IF expr
 ## LR(1) items:
-instr -> IF expr THEN instr . ELSE instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+expr -> expr . PLUS expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . MINUS expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . TIMES expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . DIV expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . RELOP expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . CONCAT expr [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+instr -> IF expr . THEN instr ELSE instr [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT ID [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES THEN RELOP PLUS MINUS DOT DIV CONCAT ]
 ## Transitions:
--- On ELSE shift to state 58
+-- On TIMES shift to state 22
+-- On THEN shift to state 58
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
 ## Reductions:
 
 State 58:
 ## Known stack suffix:
-## IF expr THEN instr ELSE
+## IF expr THEN
 ## LR(1) items:
-instr -> IF expr THEN instr ELSE . instr [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+instr -> IF expr THEN . instr ELSE instr [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
--- On STRING shift to state 4
--- On RETURN shift to state 5
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On RETURN shift to state 54
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
 -- On LCBRACE shift to state 3
--- On IF shift to state 50
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 53
--- On instr shift to state 59
--- On expr shift to state 60
--- On bloc shift to state 62
+-- On IF shift to state 56
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 59
+-- On instr shift to state 63
+-- On expr shift to state 66
+-- On bloc shift to state 68
 ## Reductions:
 
 State 59:
 ## Known stack suffix:
-## IF expr THEN instr ELSE instr
+## value
 ## LR(1) items:
-instr -> IF expr THEN instr ELSE instr . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+expr -> value . [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+instr -> value . ASSIGN expr SEMICOLON [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
+-- On ASSIGN shift to state 60
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
---   reduce production instr -> IF expr THEN instr ELSE instr
+-- On TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT
+--   reduce production expr -> value
 
 State 60:
 ## Known stack suffix:
-## expr
+## value ASSIGN
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . AND expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . OR expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT AND ]
-instr -> expr . SEMICOLON [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
-value -> expr . DOT ID [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND ]
+instr -> value ASSIGN . expr SEMICOLON [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
--- On TIMES shift to state 19
--- On SEMICOLON shift to state 61
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 61
 ## Reductions:
 
 State 61:
 ## Known stack suffix:
-## expr SEMICOLON
+## value ASSIGN expr
 ## LR(1) items:
-instr -> expr SEMICOLON . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+instr -> value ASSIGN expr . SEMICOLON [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT ID [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
 ## Transitions:
+-- On TIMES shift to state 22
+-- On SEMICOLON shift to state 62
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
---   reduce production instr -> expr SEMICOLON
 
 State 62:
 ## Known stack suffix:
-## bloc
+## value ASSIGN expr SEMICOLON
 ## LR(1) items:
-instr -> bloc . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+instr -> value ASSIGN expr SEMICOLON . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
 ## Transitions:
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
---   reduce production instr -> bloc
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
+--   reduce production instr -> value ASSIGN expr SEMICOLON
 
 State 63:
+## Known stack suffix:
+## IF expr THEN instr
+## LR(1) items:
+instr -> IF expr THEN instr . ELSE instr [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+## Transitions:
+-- On ELSE shift to state 64
+## Reductions:
+
+State 64:
+## Known stack suffix:
+## IF expr THEN instr ELSE
+## LR(1) items:
+instr -> IF expr THEN instr ELSE . instr [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+## Transitions:
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On RETURN shift to state 54
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On LCBRACE shift to state 3
+-- On IF shift to state 56
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 59
+-- On instr shift to state 65
+-- On expr shift to state 66
+-- On bloc shift to state 68
+## Reductions:
+
+State 65:
+## Known stack suffix:
+## IF expr THEN instr ELSE instr
+## LR(1) items:
+instr -> IF expr THEN instr ELSE instr . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
+--   reduce production instr -> IF expr THEN instr ELSE instr
+
+State 66:
+## Known stack suffix:
+## expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . MINUS expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . TIMES expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . DIV expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . RELOP expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+expr -> expr . CONCAT expr [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ]
+instr -> expr . SEMICOLON [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+value -> expr . DOT ID [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ASSIGN ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ASSIGN ]
+## Transitions:
+-- On TIMES shift to state 22
+-- On SEMICOLON shift to state 67
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
+## Reductions:
+
+State 67:
+## Known stack suffix:
+## expr SEMICOLON
+## LR(1) items:
+instr -> expr SEMICOLON . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
+--   reduce production instr -> expr SEMICOLON
+
+State 68:
+## Known stack suffix:
+## bloc
+## LR(1) items:
+instr -> bloc . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE ]
+## Transitions:
+## Reductions:
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IF ID ELSE CSTE
+--   reduce production instr -> bloc
+
+State 69:
 ## Known stack suffix:
 ## ID
 ## LR(1) items:
 separated_nonempty_list(COMMA,ID) -> ID . [ COLON ]
 separated_nonempty_list(COMMA,ID) -> ID . COMMA separated_nonempty_list(COMMA,ID) [ COLON ]
-valueFst -> ID . [ TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND ]
+valueFst -> ID . [ TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ASSIGN ]
 ## Transitions:
--- On COMMA shift to state 64
+-- On COMMA shift to state 70
 ## Reductions:
 -- On COLON
 --   reduce production separated_nonempty_list(COMMA,ID) -> ID
--- On TIMES SEMICOLON RELOP PLUS OR MINUS DOT DIV CONCAT ASSIGN AND
+-- On TIMES SEMICOLON RELOP PLUS MINUS DOT DIV CONCAT ASSIGN
 --   reduce production valueFst -> ID
 
-State 64:
+State 70:
 ## Known stack suffix:
 ## ID COMMA
 ## LR(1) items:
 separated_nonempty_list(COMMA,ID) -> ID COMMA . separated_nonempty_list(COMMA,ID) [ COLON ]
 ## Transitions:
--- On ID shift to state 65
--- On separated_nonempty_list(COMMA,ID) shift to state 66
+-- On ID shift to state 71
+-- On separated_nonempty_list(COMMA,ID) shift to state 72
 ## Reductions:
 
-State 65:
+State 71:
 ## Known stack suffix:
 ## ID
 ## LR(1) items:
 separated_nonempty_list(COMMA,ID) -> ID . [ COLON ]
 separated_nonempty_list(COMMA,ID) -> ID . COMMA separated_nonempty_list(COMMA,ID) [ COLON ]
 ## Transitions:
--- On COMMA shift to state 64
+-- On COMMA shift to state 70
 ## Reductions:
 -- On COLON
 --   reduce production separated_nonempty_list(COMMA,ID) -> ID
 
-State 66:
+State 72:
 ## Known stack suffix:
 ## ID COMMA separated_nonempty_list(COMMA,ID)
 ## LR(1) items:
@@ -1136,99 +1161,100 @@ separated_nonempty_list(COMMA,ID) -> ID COMMA separated_nonempty_list(COMMA,ID) 
 -- On COLON
 --   reduce production separated_nonempty_list(COMMA,ID) -> ID COMMA separated_nonempty_list(COMMA,ID)
 
-State 67:
+State 73:
 ## Known stack suffix:
 ## separated_nonempty_list(COMMA,ID)
 ## LR(1) items:
-decl -> separated_nonempty_list(COMMA,ID) . COLON ID SEMICOLON [ IS ID ]
+decl -> separated_nonempty_list(COMMA,ID) . COLON TYPENAME SEMICOLON [ IS ID ]
 ## Transitions:
--- On COLON shift to state 68
+-- On COLON shift to state 74
 ## Reductions:
 
-State 68:
+State 74:
 ## Known stack suffix:
 ## separated_nonempty_list(COMMA,ID) COLON
 ## LR(1) items:
-decl -> separated_nonempty_list(COMMA,ID) COLON . ID SEMICOLON [ IS ID ]
+decl -> separated_nonempty_list(COMMA,ID) COLON . TYPENAME SEMICOLON [ IS ID ]
 ## Transitions:
--- On ID shift to state 69
+-- On TYPENAME shift to state 75
 ## Reductions:
 
-State 69:
+State 75:
 ## Known stack suffix:
-## separated_nonempty_list(COMMA,ID) COLON ID
+## separated_nonempty_list(COMMA,ID) COLON TYPENAME
 ## LR(1) items:
-decl -> separated_nonempty_list(COMMA,ID) COLON ID . SEMICOLON [ IS ID ]
+decl -> separated_nonempty_list(COMMA,ID) COLON TYPENAME . SEMICOLON [ IS ID ]
 ## Transitions:
--- On SEMICOLON shift to state 70
+-- On SEMICOLON shift to state 76
 ## Reductions:
 
-State 70:
+State 76:
 ## Known stack suffix:
-## separated_nonempty_list(COMMA,ID) COLON ID SEMICOLON
+## separated_nonempty_list(COMMA,ID) COLON TYPENAME SEMICOLON
 ## LR(1) items:
-decl -> separated_nonempty_list(COMMA,ID) COLON ID SEMICOLON . [ IS ID ]
+decl -> separated_nonempty_list(COMMA,ID) COLON TYPENAME SEMICOLON . [ IS ID ]
 ## Transitions:
 ## Reductions:
 -- On IS ID
---   reduce production decl -> separated_nonempty_list(COMMA,ID) COLON ID SEMICOLON
+--   reduce production decl -> separated_nonempty_list(COMMA,ID) COLON TYPENAME SEMICOLON
 
-State 71:
+State 77:
 ## Known stack suffix:
 ## LCBRACE list(instr)
 ## LR(1) items:
-bloc -> LCBRACE list(instr) . RCBRACE [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE list(instr) . RCBRACE [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
 ## Transitions:
--- On RCBRACE shift to state 72
+-- On RCBRACE shift to state 78
 ## Reductions:
 
-State 72:
+State 78:
 ## Known stack suffix:
 ## LCBRACE list(instr) RCBRACE
 ## LR(1) items:
-bloc -> LCBRACE list(instr) RCBRACE . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE list(instr) RCBRACE . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
 ## Transitions:
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE
 --   reduce production bloc -> LCBRACE list(instr) RCBRACE
 
-State 73:
+State 79:
 ## Known stack suffix:
 ## list(decl)
 ## LR(1) items:
 blocWDecl -> list(decl) . IS list(instr) [ RCBRACE ]
 ## Transitions:
--- On IS shift to state 74
+-- On IS shift to state 80
 ## Reductions:
 
-State 74:
+State 80:
 ## Known stack suffix:
 ## list(decl) IS
 ## LR(1) items:
 blocWDecl -> list(decl) IS . list(instr) [ RCBRACE ]
 ## Transitions:
--- On STRING shift to state 4
--- On RETURN shift to state 5
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On RETURN shift to state 54
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
 -- On LCBRACE shift to state 3
--- On IF shift to state 50
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 53
--- On list(instr) shift to state 75
--- On instr shift to state 76
--- On expr shift to state 60
--- On bloc shift to state 62
+-- On IF shift to state 56
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 59
+-- On list(instr) shift to state 81
+-- On instr shift to state 82
+-- On expr shift to state 66
+-- On bloc shift to state 68
 ## Reductions:
 -- On RCBRACE
 --   reduce production list(instr) ->
 
-State 75:
+State 81:
 ## Known stack suffix:
 ## list(decl) IS list(instr)
 ## LR(1) items:
@@ -1238,34 +1264,35 @@ blocWDecl -> list(decl) IS list(instr) . [ RCBRACE ]
 -- On RCBRACE
 --   reduce production blocWDecl -> list(decl) IS list(instr)
 
-State 76:
+State 82:
 ## Known stack suffix:
 ## instr
 ## LR(1) items:
 list(instr) -> instr . list(instr) [ RCBRACE ]
 ## Transitions:
--- On STRING shift to state 4
--- On RETURN shift to state 5
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On RETURN shift to state 54
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
 -- On LCBRACE shift to state 3
--- On IF shift to state 50
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 53
--- On list(instr) shift to state 77
--- On instr shift to state 76
--- On expr shift to state 60
--- On bloc shift to state 62
+-- On IF shift to state 56
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 59
+-- On list(instr) shift to state 83
+-- On instr shift to state 82
+-- On expr shift to state 66
+-- On bloc shift to state 68
 ## Reductions:
 -- On RCBRACE
 --   reduce production list(instr) ->
 
-State 77:
+State 83:
 ## Known stack suffix:
 ## instr list(instr)
 ## LR(1) items:
@@ -1275,21 +1302,21 @@ list(instr) -> instr list(instr) . [ RCBRACE ]
 -- On RCBRACE
 --   reduce production list(instr) -> instr list(instr)
 
-State 78:
+State 84:
 ## Known stack suffix:
 ## decl
 ## LR(1) items:
 list(decl) -> decl . list(decl) [ IS ]
 ## Transitions:
--- On ID shift to state 65
--- On separated_nonempty_list(COMMA,ID) shift to state 67
--- On list(decl) shift to state 79
--- On decl shift to state 78
+-- On ID shift to state 71
+-- On separated_nonempty_list(COMMA,ID) shift to state 73
+-- On list(decl) shift to state 85
+-- On decl shift to state 84
 ## Reductions:
 -- On IS
 --   reduce production list(decl) ->
 
-State 79:
+State 85:
 ## Known stack suffix:
 ## decl list(decl)
 ## LR(1) items:
@@ -1299,70 +1326,70 @@ list(decl) -> decl list(decl) . [ IS ]
 -- On IS
 --   reduce production list(decl) -> decl list(decl)
 
-State 80:
+State 86:
 ## Known stack suffix:
 ## LCBRACE blocWDecl
 ## LR(1) items:
-bloc -> LCBRACE blocWDecl . RCBRACE [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE blocWDecl . RCBRACE [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
 ## Transitions:
--- On RCBRACE shift to state 81
+-- On RCBRACE shift to state 87
 ## Reductions:
 
-State 81:
+State 87:
 ## Known stack suffix:
 ## LCBRACE blocWDecl RCBRACE
 ## LR(1) items:
-bloc -> LCBRACE blocWDecl RCBRACE . [ STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
+bloc -> LCBRACE blocWDecl RCBRACE . [ TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE ]
 ## Transitions:
 ## Reductions:
--- On STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE
+-- On TYPENAME STRING RETURN RCBRACE PLUS NOT NEW MINUS LPAREN LCBRACE IS IF ID EOF ELSE DEF CSTE
 --   reduce production bloc -> LCBRACE blocWDecl RCBRACE
 
-State 82:
+State 88:
 ## Known stack suffix:
-## OBJECT ID option(bloc)
+## OBJECT TYPENAME option(bloc)
 ## LR(1) items:
-object_ -> OBJECT ID option(bloc) . IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME option(bloc) . IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On IS shift to state 83
+-- On IS shift to state 89
 ## Reductions:
 
-State 83:
+State 89:
 ## Known stack suffix:
-## OBJECT ID option(bloc) IS
+## OBJECT TYPENAME option(bloc) IS
 ## LR(1) items:
-object_ -> OBJECT ID option(bloc) IS . LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME option(bloc) IS . LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On LCBRACE shift to state 84
+-- On LCBRACE shift to state 90
 ## Reductions:
 
-State 84:
+State 90:
 ## Known stack suffix:
-## OBJECT ID option(bloc) IS LCBRACE
+## OBJECT TYPENAME option(bloc) IS LCBRACE
 ## LR(1) items:
-object_ -> OBJECT ID option(bloc) IS LCBRACE . classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME option(bloc) IS LCBRACE . classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On VAR shift to state 85
--- On list(field) shift to state 92
--- On field shift to state 118
--- On classIn shift to state 120
+-- On VAR shift to state 91
+-- On list(field) shift to state 98
+-- On field shift to state 124
+-- On classIn shift to state 126
 ## Reductions:
 -- On RCBRACE DEF
 --   reduce production list(field) ->
 
-State 85:
+State 91:
 ## Known stack suffix:
 ## VAR
 ## LR(1) items:
-field -> VAR . boption(AUTO) ID COLON ID SEMICOLON [ VAR RCBRACE DEF ]
+field -> VAR . boption(AUTO) ID COLON TYPENAME SEMICOLON [ VAR RCBRACE DEF ]
 ## Transitions:
--- On AUTO shift to state 86
--- On boption(AUTO) shift to state 87
+-- On AUTO shift to state 92
+-- On boption(AUTO) shift to state 93
 ## Reductions:
 -- On ID
 --   reduce production boption(AUTO) ->
 
-State 86:
+State 92:
 ## Known stack suffix:
 ## AUTO
 ## LR(1) items:
@@ -1372,79 +1399,79 @@ boption(AUTO) -> AUTO . [ ID ]
 -- On ID
 --   reduce production boption(AUTO) -> AUTO
 
-State 87:
+State 93:
 ## Known stack suffix:
 ## VAR boption(AUTO)
 ## LR(1) items:
-field -> VAR boption(AUTO) . ID COLON ID SEMICOLON [ VAR RCBRACE DEF ]
+field -> VAR boption(AUTO) . ID COLON TYPENAME SEMICOLON [ VAR RCBRACE DEF ]
 ## Transitions:
--- On ID shift to state 88
+-- On ID shift to state 94
 ## Reductions:
 
-State 88:
+State 94:
 ## Known stack suffix:
 ## VAR boption(AUTO) ID
 ## LR(1) items:
-field -> VAR boption(AUTO) ID . COLON ID SEMICOLON [ VAR RCBRACE DEF ]
+field -> VAR boption(AUTO) ID . COLON TYPENAME SEMICOLON [ VAR RCBRACE DEF ]
 ## Transitions:
--- On COLON shift to state 89
+-- On COLON shift to state 95
 ## Reductions:
 
-State 89:
+State 95:
 ## Known stack suffix:
 ## VAR boption(AUTO) ID COLON
 ## LR(1) items:
-field -> VAR boption(AUTO) ID COLON . ID SEMICOLON [ VAR RCBRACE DEF ]
+field -> VAR boption(AUTO) ID COLON . TYPENAME SEMICOLON [ VAR RCBRACE DEF ]
 ## Transitions:
--- On ID shift to state 90
+-- On TYPENAME shift to state 96
 ## Reductions:
 
-State 90:
+State 96:
 ## Known stack suffix:
-## VAR boption(AUTO) ID COLON ID
+## VAR boption(AUTO) ID COLON TYPENAME
 ## LR(1) items:
-field -> VAR boption(AUTO) ID COLON ID . SEMICOLON [ VAR RCBRACE DEF ]
+field -> VAR boption(AUTO) ID COLON TYPENAME . SEMICOLON [ VAR RCBRACE DEF ]
 ## Transitions:
--- On SEMICOLON shift to state 91
+-- On SEMICOLON shift to state 97
 ## Reductions:
 
-State 91:
+State 97:
 ## Known stack suffix:
-## VAR boption(AUTO) ID COLON ID SEMICOLON
+## VAR boption(AUTO) ID COLON TYPENAME SEMICOLON
 ## LR(1) items:
-field -> VAR boption(AUTO) ID COLON ID SEMICOLON . [ VAR RCBRACE DEF ]
+field -> VAR boption(AUTO) ID COLON TYPENAME SEMICOLON . [ VAR RCBRACE DEF ]
 ## Transitions:
 ## Reductions:
 -- On VAR RCBRACE DEF
---   reduce production field -> VAR boption(AUTO) ID COLON ID SEMICOLON
+--   reduce production field -> VAR boption(AUTO) ID COLON TYPENAME SEMICOLON
 
-State 92:
+State 98:
 ## Known stack suffix:
 ## list(field)
 ## LR(1) items:
 classIn -> list(field) . list(method_) [ RCBRACE ]
 ## Transitions:
--- On DEF shift to state 93
--- On method_ shift to state 115
--- On list(method_) shift to state 117
+-- On DEF shift to state 99
+-- On method_ shift to state 121
+-- On list(method_) shift to state 123
 ## Reductions:
 -- On RCBRACE
 --   reduce production list(method_) ->
 
-State 93:
+State 99:
 ## Known stack suffix:
 ## DEF
 ## LR(1) items:
-method_ -> DEF . boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF . boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF . boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On OVERRIDE shift to state 94
--- On boption(OVERRIDE) shift to state 95
+-- On OVERRIDE shift to state 100
+-- On boption(OVERRIDE) shift to state 101
 ## Reductions:
 -- On ID
 --   reduce production boption(OVERRIDE) ->
 
-State 94:
+State 100:
 ## Known stack suffix:
 ## OVERRIDE
 ## LR(1) items:
@@ -1454,70 +1481,70 @@ boption(OVERRIDE) -> OVERRIDE . [ ID ]
 -- On ID
 --   reduce production boption(OVERRIDE) -> OVERRIDE
 
-State 95:
+State 101:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE)
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) . ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) . ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF boption(OVERRIDE) . ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On ID shift to state 96
+-- On ID shift to state 102
 ## Reductions:
 
-State 96:
+State 102:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID . LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) ID . LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF boption(OVERRIDE) ID . LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On LPAREN shift to state 97
+-- On LPAREN shift to state 103
 ## Reductions:
 
-State 97:
+State 103:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN . loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN . loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF boption(OVERRIDE) ID LPAREN . loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On ID shift to state 98
--- On separated_nonempty_list(COMMA,param) shift to state 101
--- On param shift to state 102
--- On loption(separated_nonempty_list(COMMA,param)) shift to state 105
+-- On ID shift to state 104
+-- On separated_nonempty_list(COMMA,param) shift to state 107
+-- On param shift to state 108
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 111
 ## Reductions:
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,param)) ->
 
-State 98:
+State 104:
 ## Known stack suffix:
 ## ID
 ## LR(1) items:
-param -> ID . COLON ID [ RPAREN COMMA ]
+param -> ID . COLON TYPENAME [ RPAREN COMMA ]
 ## Transitions:
--- On COLON shift to state 99
+-- On COLON shift to state 105
 ## Reductions:
 
-State 99:
+State 105:
 ## Known stack suffix:
 ## ID COLON
 ## LR(1) items:
-param -> ID COLON . ID [ RPAREN COMMA ]
+param -> ID COLON . TYPENAME [ RPAREN COMMA ]
 ## Transitions:
--- On ID shift to state 100
+-- On TYPENAME shift to state 106
 ## Reductions:
 
-State 100:
+State 106:
 ## Known stack suffix:
-## ID COLON ID
+## ID COLON TYPENAME
 ## LR(1) items:
-param -> ID COLON ID . [ RPAREN COMMA ]
+param -> ID COLON TYPENAME . [ RPAREN COMMA ]
 ## Transitions:
 ## Reductions:
 -- On RPAREN COMMA
---   reduce production param -> ID COLON ID
+--   reduce production param -> ID COLON TYPENAME
 
-State 101:
+State 107:
 ## Known stack suffix:
 ## separated_nonempty_list(COMMA,param)
 ## LR(1) items:
@@ -1527,30 +1554,30 @@ loption(separated_nonempty_list(COMMA,param)) -> separated_nonempty_list(COMMA,p
 -- On RPAREN
 --   reduce production loption(separated_nonempty_list(COMMA,param)) -> separated_nonempty_list(COMMA,param)
 
-State 102:
+State 108:
 ## Known stack suffix:
 ## param
 ## LR(1) items:
 separated_nonempty_list(COMMA,param) -> param . [ RPAREN ]
 separated_nonempty_list(COMMA,param) -> param . COMMA separated_nonempty_list(COMMA,param) [ RPAREN ]
 ## Transitions:
--- On COMMA shift to state 103
+-- On COMMA shift to state 109
 ## Reductions:
 -- On RPAREN
 --   reduce production separated_nonempty_list(COMMA,param) -> param
 
-State 103:
+State 109:
 ## Known stack suffix:
 ## param COMMA
 ## LR(1) items:
 separated_nonempty_list(COMMA,param) -> param COMMA . separated_nonempty_list(COMMA,param) [ RPAREN ]
 ## Transitions:
--- On ID shift to state 98
--- On separated_nonempty_list(COMMA,param) shift to state 104
--- On param shift to state 102
+-- On ID shift to state 104
+-- On separated_nonempty_list(COMMA,param) shift to state 110
+-- On param shift to state 108
 ## Reductions:
 
-State 104:
+State 110:
 ## Known stack suffix:
 ## param COMMA separated_nonempty_list(COMMA,param)
 ## LR(1) items:
@@ -1560,101 +1587,98 @@ separated_nonempty_list(COMMA,param) -> param COMMA separated_nonempty_list(COMM
 -- On RPAREN
 --   reduce production separated_nonempty_list(COMMA,param) -> param COMMA separated_nonempty_list(COMMA,param)
 
-State 105:
+State 111:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param))
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) . RPAREN COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) . RPAREN COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) . RPAREN option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On RPAREN shift to state 106
+-- On RPAREN shift to state 112
 ## Reductions:
 
-State 106:
+State 112:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN . COLON ID ASSIGN expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN . COLON TYPENAME ASSIGN expr [ RCBRACE DEF ]
 method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN . option(retType) IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On COLON shift to state 107
--- On retType shift to state 111
--- On option(retType) shift to state 112
+-- On COLON shift to state 113
+-- On retType shift to state 117
+-- On option(retType) shift to state 118
 ## Reductions:
 -- On IS
 --   reduce production option(retType) ->
 
-State 107:
+State 113:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON . ID ASSIGN expr [ RCBRACE DEF ]
-retType -> COLON . ID [ IS ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON . TYPENAME ASSIGN expr [ RCBRACE DEF ]
+retType -> COLON . TYPENAME [ IS ]
 ## Transitions:
--- On ID shift to state 108
+-- On TYPENAME shift to state 114
 ## Reductions:
 
-State 108:
+State 114:
 ## Known stack suffix:
-## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID
+## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID . ASSIGN expr [ RCBRACE DEF ]
-retType -> COLON ID . [ IS ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME . ASSIGN expr [ RCBRACE DEF ]
+retType -> COLON TYPENAME . [ IS ]
 ## Transitions:
--- On ASSIGN shift to state 109
+-- On ASSIGN shift to state 115
 ## Reductions:
 -- On IS
---   reduce production retType -> COLON ID
+--   reduce production retType -> COLON TYPENAME
 
-State 109:
+State 115:
 ## Known stack suffix:
-## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN
+## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN
 ## LR(1) items:
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN . expr [ RCBRACE DEF ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN . expr [ RCBRACE DEF ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On expr shift to state 110
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On expr shift to state 116
 ## Reductions:
 
-State 110:
+State 116:
 ## Known stack suffix:
-## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr
+## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . MINUS expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . TIMES expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . DIV expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . AND expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . OR expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . RELOP expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-expr -> expr . CONCAT expr [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr . [ RCBRACE DEF ]
-value -> expr . DOT ID [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
-value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RELOP RCBRACE PLUS OR MINUS DOT DIV DEF CONCAT AND ]
+expr -> expr . PLUS expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+expr -> expr . MINUS expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+expr -> expr . TIMES expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+expr -> expr . DIV expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+expr -> expr . RELOP expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+expr -> expr . CONCAT expr [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr . [ RCBRACE DEF ]
+value -> expr . DOT ID [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
+value -> expr . DOT ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ TIMES RELOP RCBRACE PLUS MINUS DOT DIV DEF CONCAT ]
 ## Transitions:
--- On TIMES shift to state 19
--- On RELOP shift to state 28
--- On PLUS shift to state 30
--- On OR shift to state 38
--- On MINUS shift to state 34
--- On DOT shift to state 21
--- On DIV shift to state 32
--- On CONCAT shift to state 36
--- On AND shift to state 40
+-- On TIMES shift to state 22
+-- On RELOP shift to state 31
+-- On PLUS shift to state 33
+-- On MINUS shift to state 37
+-- On DOT shift to state 24
+-- On DIV shift to state 35
+-- On CONCAT shift to state 39
 ## Reductions:
 -- On RCBRACE DEF
---   reduce production method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON ID ASSIGN expr
+--   reduce production method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN COLON TYPENAME ASSIGN expr
 
-State 111:
+State 117:
 ## Known stack suffix:
 ## retType
 ## LR(1) items:
@@ -1664,26 +1688,26 @@ option(retType) -> retType . [ IS ]
 -- On IS
 --   reduce production option(retType) -> retType
 
-State 112:
+State 118:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType)
 ## LR(1) items:
 method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) . IS bloc [ RCBRACE DEF ]
 ## Transitions:
--- On IS shift to state 113
+-- On IS shift to state 119
 ## Reductions:
 
-State 113:
+State 119:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS
 ## LR(1) items:
 method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS . bloc [ RCBRACE DEF ]
 ## Transitions:
 -- On LCBRACE shift to state 3
--- On bloc shift to state 114
+-- On bloc shift to state 120
 ## Reductions:
 
-State 114:
+State 120:
 ## Known stack suffix:
 ## DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc
 ## LR(1) items:
@@ -1693,20 +1717,20 @@ method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA
 -- On RCBRACE DEF
 --   reduce production method_ -> DEF boption(OVERRIDE) ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(retType) IS bloc
 
-State 115:
+State 121:
 ## Known stack suffix:
 ## method_
 ## LR(1) items:
 list(method_) -> method_ . list(method_) [ RCBRACE ]
 ## Transitions:
--- On DEF shift to state 93
--- On method_ shift to state 115
--- On list(method_) shift to state 116
+-- On DEF shift to state 99
+-- On method_ shift to state 121
+-- On list(method_) shift to state 122
 ## Reductions:
 -- On RCBRACE
 --   reduce production list(method_) ->
 
-State 116:
+State 122:
 ## Known stack suffix:
 ## method_ list(method_)
 ## LR(1) items:
@@ -1716,7 +1740,7 @@ list(method_) -> method_ list(method_) . [ RCBRACE ]
 -- On RCBRACE
 --   reduce production list(method_) -> method_ list(method_)
 
-State 117:
+State 123:
 ## Known stack suffix:
 ## list(field) list(method_)
 ## LR(1) items:
@@ -1726,20 +1750,20 @@ classIn -> list(field) list(method_) . [ RCBRACE ]
 -- On RCBRACE
 --   reduce production classIn -> list(field) list(method_)
 
-State 118:
+State 124:
 ## Known stack suffix:
 ## field
 ## LR(1) items:
 list(field) -> field . list(field) [ RCBRACE DEF ]
 ## Transitions:
--- On VAR shift to state 85
--- On list(field) shift to state 119
--- On field shift to state 118
+-- On VAR shift to state 91
+-- On list(field) shift to state 125
+-- On field shift to state 124
 ## Reductions:
 -- On RCBRACE DEF
 --   reduce production list(field) ->
 
-State 119:
+State 125:
 ## Known stack suffix:
 ## field list(field)
 ## LR(1) items:
@@ -1749,26 +1773,26 @@ list(field) -> field list(field) . [ RCBRACE DEF ]
 -- On RCBRACE DEF
 --   reduce production list(field) -> field list(field)
 
-State 120:
+State 126:
 ## Known stack suffix:
-## OBJECT ID option(bloc) IS LCBRACE classIn
+## OBJECT TYPENAME option(bloc) IS LCBRACE classIn
 ## LR(1) items:
-object_ -> OBJECT ID option(bloc) IS LCBRACE classIn . RCBRACE [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME option(bloc) IS LCBRACE classIn . RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On RCBRACE shift to state 121
+-- On RCBRACE shift to state 127
 ## Reductions:
 
-State 121:
+State 127:
 ## Known stack suffix:
-## OBJECT ID option(bloc) IS LCBRACE classIn RCBRACE
+## OBJECT TYPENAME option(bloc) IS LCBRACE classIn RCBRACE
 ## LR(1) items:
-object_ -> OBJECT ID option(bloc) IS LCBRACE classIn RCBRACE . [ OBJECT LCBRACE CLASS ]
+object_ -> OBJECT TYPENAME option(bloc) IS LCBRACE classIn RCBRACE . [ OBJECT LCBRACE CLASS ]
 ## Transitions:
 ## Reductions:
 -- On OBJECT LCBRACE CLASS
---   reduce production object_ -> OBJECT ID option(bloc) IS LCBRACE classIn RCBRACE
+--   reduce production object_ -> OBJECT TYPENAME option(bloc) IS LCBRACE classIn RCBRACE
 
-State 122:
+State 128:
 ## Known stack suffix:
 ## bloc
 ## LR(1) items:
@@ -1778,185 +1802,186 @@ option(bloc) -> bloc . [ IS ]
 -- On IS
 --   reduce production option(bloc) -> bloc
 
-State 123:
+State 129:
 ## Known stack suffix:
 ## CLASS
 ## LR(1) items:
-class_ -> CLASS . ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+class_ -> CLASS . TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On ID shift to state 124
-## Reductions:
-
-State 124:
-## Known stack suffix:
-## CLASS ID
-## LR(1) items:
-class_ -> CLASS ID . LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
-## Transitions:
--- On LPAREN shift to state 125
-## Reductions:
-
-State 125:
-## Known stack suffix:
-## CLASS ID LPAREN
-## LR(1) items:
-class_ -> CLASS ID LPAREN . loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
-## Transitions:
--- On ID shift to state 98
--- On separated_nonempty_list(COMMA,param) shift to state 101
--- On param shift to state 102
--- On loption(separated_nonempty_list(COMMA,param)) shift to state 126
-## Reductions:
--- On RPAREN
---   reduce production loption(separated_nonempty_list(COMMA,param)) ->
-
-State 126:
-## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param))
-## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) . RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
-## Transitions:
--- On RPAREN shift to state 127
-## Reductions:
-
-State 127:
-## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN
-## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN . option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
-## Transitions:
--- On EXTENDS shift to state 128
--- On option(extends) shift to state 133
--- On extends shift to state 139
-## Reductions:
--- On LCBRACE IS
---   reduce production option(extends) ->
-
-State 128:
-## Known stack suffix:
-## EXTENDS
-## LR(1) items:
-extends -> EXTENDS . ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
-## Transitions:
--- On ID shift to state 129
-## Reductions:
-
-State 129:
-## Known stack suffix:
-## EXTENDS ID
-## LR(1) items:
-extends -> EXTENDS ID . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
-## Transitions:
--- On LPAREN shift to state 130
+-- On TYPENAME shift to state 130
 ## Reductions:
 
 State 130:
 ## Known stack suffix:
-## EXTENDS ID LPAREN
+## CLASS TYPENAME
 ## LR(1) items:
-extends -> EXTENDS ID LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
+class_ -> CLASS TYPENAME . LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On STRING shift to state 4
--- On PLUS shift to state 7
--- On NOT shift to state 8
--- On NEW shift to state 9
--- On MINUS shift to state 12
--- On LPAREN shift to state 13
--- On ID shift to state 14
--- On CSTE shift to state 15
--- On valueFst shift to state 16
--- On value shift to state 17
--- On separated_nonempty_list(COMMA,expr) shift to state 24
--- On loption(separated_nonempty_list(COMMA,expr)) shift to state 131
--- On expr shift to state 27
+-- On LPAREN shift to state 131
 ## Reductions:
--- On RPAREN
---   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
 State 131:
 ## Known stack suffix:
-## EXTENDS ID LPAREN loption(separated_nonempty_list(COMMA,expr))
+## CLASS TYPENAME LPAREN
 ## LR(1) items:
-extends -> EXTENDS ID LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ LCBRACE IS ]
+class_ -> CLASS TYPENAME LPAREN . loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On RPAREN shift to state 132
+-- On ID shift to state 104
+-- On separated_nonempty_list(COMMA,param) shift to state 107
+-- On param shift to state 108
+-- On loption(separated_nonempty_list(COMMA,param)) shift to state 132
 ## Reductions:
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,param)) ->
 
 State 132:
 ## Known stack suffix:
-## EXTENDS ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param))
 ## LR(1) items:
-extends -> EXTENDS ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ LCBRACE IS ]
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) . RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
+-- On RPAREN shift to state 133
 ## Reductions:
--- On LCBRACE IS
---   reduce production extends -> EXTENDS ID LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 
 State 133:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends)
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) . option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN . option(extends) option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
 ## Transitions:
--- On LCBRACE shift to state 3
--- On option(bloc) shift to state 134
--- On bloc shift to state 122
+-- On EXTENDS shift to state 134
+-- On option(extends) shift to state 139
+-- On extends shift to state 145
 ## Reductions:
--- On IS
---   reduce production option(bloc) ->
+-- On LCBRACE IS
+--   reduce production option(extends) ->
 
 State 134:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc)
+## EXTENDS
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) . IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+extends -> EXTENDS . TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
 ## Transitions:
--- On IS shift to state 135
+-- On TYPENAME shift to state 135
 ## Reductions:
 
 State 135:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS
+## EXTENDS TYPENAME
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS . LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+extends -> EXTENDS TYPENAME . LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
 ## Transitions:
--- On LCBRACE shift to state 136
+-- On LPAREN shift to state 136
 ## Reductions:
 
 State 136:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE
+## EXTENDS TYPENAME LPAREN
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE . classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+extends -> EXTENDS TYPENAME LPAREN . loption(separated_nonempty_list(COMMA,expr)) RPAREN [ LCBRACE IS ]
 ## Transitions:
--- On VAR shift to state 85
--- On list(field) shift to state 92
--- On field shift to state 118
--- On classIn shift to state 137
+-- On TYPENAME shift to state 4
+-- On STRING shift to state 8
+-- On PLUS shift to state 9
+-- On NOT shift to state 10
+-- On NEW shift to state 11
+-- On MINUS shift to state 14
+-- On LPAREN shift to state 15
+-- On ID shift to state 17
+-- On CSTE shift to state 18
+-- On valueFst shift to state 19
+-- On value shift to state 20
+-- On separated_nonempty_list(COMMA,expr) shift to state 27
+-- On loption(separated_nonempty_list(COMMA,expr)) shift to state 137
+-- On expr shift to state 30
 ## Reductions:
--- On RCBRACE DEF
---   reduce production list(field) ->
+-- On RPAREN
+--   reduce production loption(separated_nonempty_list(COMMA,expr)) ->
 
 State 137:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn
+## EXTENDS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr))
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn . RCBRACE [ OBJECT LCBRACE CLASS ]
+extends -> EXTENDS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) . RPAREN [ LCBRACE IS ]
 ## Transitions:
--- On RCBRACE shift to state 138
+-- On RPAREN shift to state 138
 ## Reductions:
 
 State 138:
 ## Known stack suffix:
-## CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE
+## EXTENDS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
 ## LR(1) items:
-class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE . [ OBJECT LCBRACE CLASS ]
+extends -> EXTENDS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN . [ LCBRACE IS ]
+## Transitions:
+## Reductions:
+-- On LCBRACE IS
+--   reduce production extends -> EXTENDS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,expr)) RPAREN
+
+State 139:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends)
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) . option(bloc) IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+## Transitions:
+-- On LCBRACE shift to state 3
+-- On option(bloc) shift to state 140
+-- On bloc shift to state 128
+## Reductions:
+-- On IS
+--   reduce production option(bloc) ->
+
+State 140:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc)
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) . IS LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+## Transitions:
+-- On IS shift to state 141
+## Reductions:
+
+State 141:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS . LCBRACE classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+## Transitions:
+-- On LCBRACE shift to state 142
+## Reductions:
+
+State 142:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE . classIn RCBRACE [ OBJECT LCBRACE CLASS ]
+## Transitions:
+-- On VAR shift to state 91
+-- On list(field) shift to state 98
+-- On field shift to state 124
+-- On classIn shift to state 143
+## Reductions:
+-- On RCBRACE DEF
+--   reduce production list(field) ->
+
+State 143:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn . RCBRACE [ OBJECT LCBRACE CLASS ]
+## Transitions:
+-- On RCBRACE shift to state 144
+## Reductions:
+
+State 144:
+## Known stack suffix:
+## CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE
+## LR(1) items:
+class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE . [ OBJECT LCBRACE CLASS ]
 ## Transitions:
 ## Reductions:
 -- On OBJECT LCBRACE CLASS
---   reduce production class_ -> CLASS ID LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE
+--   reduce production class_ -> CLASS TYPENAME LPAREN loption(separated_nonempty_list(COMMA,param)) RPAREN option(extends) option(bloc) IS LCBRACE classIn RCBRACE
 
-State 139:
+State 145:
 ## Known stack suffix:
 ## extends
 ## LR(1) items:
@@ -1966,7 +1991,7 @@ option(extends) -> extends . [ LCBRACE IS ]
 -- On LCBRACE IS
 --   reduce production option(extends) -> extends
 
-State 140:
+State 146:
 ## Known stack suffix:
 ## prog
 ## LR(1) items:
@@ -1976,7 +2001,7 @@ prog' -> prog . [ # ]
 -- On #
 --   accept prog
 
-State 141:
+State 147:
 ## Known stack suffix:
 ## object_
 ## LR(1) items:
@@ -1986,26 +2011,26 @@ classOrObject -> object_ . [ OBJECT LCBRACE CLASS ]
 -- On OBJECT LCBRACE CLASS
 --   reduce production classOrObject -> object_
 
-State 142:
+State 148:
 ## Known stack suffix:
 ## list(classOrObject)
 ## LR(1) items:
 prog -> list(classOrObject) . bloc EOF [ # ]
 ## Transitions:
 -- On LCBRACE shift to state 3
--- On bloc shift to state 143
+-- On bloc shift to state 149
 ## Reductions:
 
-State 143:
+State 149:
 ## Known stack suffix:
 ## list(classOrObject) bloc
 ## LR(1) items:
 prog -> list(classOrObject) bloc . EOF [ # ]
 ## Transitions:
--- On EOF shift to state 144
+-- On EOF shift to state 150
 ## Reductions:
 
-State 144:
+State 150:
 ## Known stack suffix:
 ## list(classOrObject) bloc EOF
 ## LR(1) items:
@@ -2015,7 +2040,7 @@ prog -> list(classOrObject) bloc EOF . [ # ]
 -- On #
 --   reduce production prog -> list(classOrObject) bloc EOF
 
-State 145:
+State 151:
 ## Known stack suffix:
 ## class_
 ## LR(1) items:
@@ -2025,23 +2050,23 @@ classOrObject -> class_ . [ OBJECT LCBRACE CLASS ]
 -- On OBJECT LCBRACE CLASS
 --   reduce production classOrObject -> class_
 
-State 146:
+State 152:
 ## Known stack suffix:
 ## classOrObject
 ## LR(1) items:
 list(classOrObject) -> classOrObject . list(classOrObject) [ LCBRACE ]
 ## Transitions:
 -- On OBJECT shift to state 1
--- On CLASS shift to state 123
--- On object_ shift to state 141
--- On list(classOrObject) shift to state 147
--- On class_ shift to state 145
--- On classOrObject shift to state 146
+-- On CLASS shift to state 129
+-- On object_ shift to state 147
+-- On list(classOrObject) shift to state 153
+-- On class_ shift to state 151
+-- On classOrObject shift to state 152
 ## Reductions:
 -- On LCBRACE
 --   reduce production list(classOrObject) ->
 
-State 147:
+State 153:
 ## Known stack suffix:
 ## classOrObject list(classOrObject)
 ## LR(1) items:

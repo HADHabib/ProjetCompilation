@@ -26,12 +26,12 @@ and genExpr e =
     | Times(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    MUL\n"
     | Minus(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    SUB\n"
     | Div(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    DIV\n"
-    | And(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    AND\n"
-    | Or(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    OR\n"
     | Concat(e1, e2) -> genExpr e1; genExpr e2; Printf.printf "    CONCAT\n"
     | UMinus(e) -> genExpr e; Printf.printf "    PUSHI -1\n    MUL\n"
     | Not(e) -> genExpr e; Printf.printf "    NOT\n"
     | Inst(n, a) -> Printf.printf "    ALLOC %d\n" (getClassSize n); genStaticCall (n ^ "__constructor") a false
+    | Cast(t, e) -> genExpr e
+    | EmptyExpr -> ()
     | Comp(e1, c, e2) -> match c with
     | Eq -> genExpr e1; genExpr e2; Printf.printf "    EQUAL\n"
     | Neq -> genExpr e1; genExpr e2; Printf.printf "    EQUAL\n    NOT\n"
@@ -73,11 +73,12 @@ let rec genInstr i =
         Printf.printf "%s: NOP\n" label_else; genInstr i2;
         Printf.printf "%s: NOP\n" label_endif
 and genBloc b =
-    (match (fst b) with
-     | [] -> ()
-     | l -> Printf.printf "    PUSHN %d -- Alloc space for local vars\n" (List.fold_left (fun a v -> a + List.length (fst v)) 0 l)
-    );
-    List.iter genInstr (snd b)
+    match (fst b) with
+    | [] -> List.iter genInstr (snd b)
+    | l -> let nb = List.fold_left (fun a v -> a + List.length (fst v)) 0 l in
+        Printf.printf "    PUSHN %d -- Alloc space for local vars\n" nb;
+        List.iter genInstr (snd b);
+        Printf.printf "    POPN %d -- De-alloc space for local vars\n" nb
 
 let globalClassName = ref ""
 let globalClassId = ref 0
@@ -87,7 +88,7 @@ let genMethod m =
     | Calc(_, name, a, _, e) ->
         Printf.printf "%s_%s: NOP\n" !globalClassName name;
         genExpr e;
-        Printf.printf "    STOREL %d -- result\n    RETURN\n\n" (-(List.length a)-2)
+        Printf.printf "    STOREL %d -- result\n    RETURN\n\n" (-(List.length a)-1)
     | Body(_, name, _, _, b) ->
         Printf.printf "%s_%s: NOP\n" !globalClassName name;
         genBloc b;
