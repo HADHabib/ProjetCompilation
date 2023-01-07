@@ -5,46 +5,46 @@
     CALL
     STOREG 0
     PUSHN 1
-    ALLOC 10
+    ALLOC 11
     DUPN 1
     PUSHA Point_x
-    STORE 0
+    STORE 1
     DUPN 1
     PUSHA Point_y
-    STORE 1
-    DUPN 1
-    PUSHA Point_name
     STORE 2
     DUPN 1
-    PUSHA Point_setName
+    PUSHA Point_name
     STORE 3
     DUPN 1
-    PUSHA Point_isCloned
+    PUSHA Point_setName
     STORE 4
     DUPN 1
-    PUSHA Point_move
+    PUSHA Point_isCloned
     STORE 5
     DUPN 1
-    PUSHA Point_print
+    PUSHA Point_move
     STORE 6
     DUPN 1
-    PUSHA Point_clone
+    PUSHA Point_print
     STORE 7
     DUPN 1
-    PUSHA Point_allClones
+    PUSHA Point_clone
     STORE 8
     DUPN 1
-    PUSHA Point_egal
+    PUSHA Point_allClones
     STORE 9
+    DUPN 1
+    PUSHA Point_egal
+    STORE 10
     STOREG 1
     PUSHN 1
-    ALLOC 2
+    ALLOC 3
     DUPN 1
     PUSHA Couleur_name
-    STORE 0
+    STORE 1
     DUPN 1
     PUSHA Couleur_estGris
-    STORE 1
+    STORE 2
     STOREG 2
     PUSHN 1
     ALLOC 4
@@ -52,43 +52,139 @@
     CALL
     STOREG 3
     PUSHN 1
-    ALLOC 5
+    ALLOC 14
     DUPN 1
-    PUSHA PointColore_couleur
+    PUSHG 1
     STORE 0
     DUPN 1
-    PUSHA PointColore_colore
+    PUSHA Point_x
     STORE 1
     DUPN 1
-    PUSHA PointColore_clone
+    PUSHA Point_y
     STORE 2
     DUPN 1
-    PUSHA PointColore_estGris
+    PUSHA Point_name
     STORE 3
     DUPN 1
-    PUSHA PointColore_print
+    PUSHA Point_setName
     STORE 4
+    DUPN 1
+    PUSHA Point_isCloned
+    STORE 5
+    DUPN 1
+    PUSHA Point_move
+    STORE 6
+    DUPN 1
+    PUSHA PointColore_print
+    STORE 7
+    DUPN 1
+    PUSHA PointColore_clone
+    STORE 8
+    DUPN 1
+    PUSHA Point_allClones
+    STORE 9
+    DUPN 1
+    PUSHA Point_egal
+    STORE 10
+    DUPN 1
+    PUSHA PointColore_couleur
+    STORE 11
+    DUPN 1
+    PUSHA PointColore_colore
+    STORE 12
+    DUPN 1
+    PUSHA PointColore_estGris
+    STORE 13
     STOREG 4
     PUSHN 1
-    ALLOC 3
+    ALLOC 14
     DUPN 1
-    PUSHA PointNoir_estGris
+    PUSHG 4
     STORE 0
     DUPN 1
-    PUSHA PointNoir_colore
+    PUSHA Point_x
     STORE 1
+    DUPN 1
+    PUSHA Point_y
+    STORE 2
+    DUPN 1
+    PUSHA Point_name
+    STORE 3
+    DUPN 1
+    PUSHA Point_setName
+    STORE 4
+    DUPN 1
+    PUSHA Point_isCloned
+    STORE 5
+    DUPN 1
+    PUSHA Point_move
+    STORE 6
+    DUPN 1
+    PUSHA PointColore_print
+    STORE 7
+    DUPN 1
+    PUSHA PointColore_clone
+    STORE 8
+    DUPN 1
+    PUSHA Point_allClones
+    STORE 9
+    DUPN 1
+    PUSHA Point_egal
+    STORE 10
     DUPN 1
     PUSHA PointNoir_couleur
-    STORE 2
+    STORE 11
+    DUPN 1
+    PUSHA PointNoir_colore
+    STORE 12
+    DUPN 1
+    PUSHA PointNoir_estGris
+    STORE 13
     STOREG 5
     PUSHN 1
-    ALLOC 2
+    ALLOC 14
     DUPN 1
-    PUSHA DefaultPoint_estGris
+    PUSHG 4
     STORE 0
     DUPN 1
-    PUSHA DefaultPoint_couleur
+    PUSHA Point_x
     STORE 1
+    DUPN 1
+    PUSHA Point_y
+    STORE 2
+    DUPN 1
+    PUSHA Point_name
+    STORE 3
+    DUPN 1
+    PUSHA Point_setName
+    STORE 4
+    DUPN 1
+    PUSHA Point_isCloned
+    STORE 5
+    DUPN 1
+    PUSHA Point_move
+    STORE 6
+    DUPN 1
+    PUSHA PointColore_print
+    STORE 7
+    DUPN 1
+    PUSHA PointColore_clone
+    STORE 8
+    DUPN 1
+    PUSHA Point_allClones
+    STORE 9
+    DUPN 1
+    PUSHA Point_egal
+    STORE 10
+    DUPN 1
+    PUSHA DefaultPoint_couleur
+    STORE 11
+    DUPN 1
+    PUSHA PointColore_colore
+    STORE 12
+    DUPN 1
+    PUSHA DefaultPoint_estGris
+    STORE 13
     STOREG 6
     PUSHN 1
     ALLOC 1
@@ -171,7 +267,7 @@ Point__constructor: NOP
     PUSHL -3 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 3 -- Method
+    LOAD 4 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -209,7 +305,7 @@ Point_isCloned: NOP
     PUSHI 0
     EQUAL
     NOT
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 Point_move: NOP
@@ -224,7 +320,7 @@ Point_move: NOP
     PUSHL -1 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 1 -- Method
+    LOAD 2 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHL -3 -- dy
@@ -239,7 +335,7 @@ Point_move: NOP
     PUSHL -1 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -247,7 +343,7 @@ Point_move: NOP
 lbl__1__else1: NOP
 lbl__2__endif2: NOP
     PUSHL -1 -- this
-    STOREL -4 -- result
+    STOREL -5 -- result
     RETURN
 
 Point_print: NOP
@@ -320,13 +416,13 @@ Point_clone: NOP
     LOAD 6 -- clone
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 3 -- Method
+    LOAD 4 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
     PUSHL -1 -- this
     LOAD 6 -- clone
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 Point_allClones: NOP
@@ -342,7 +438,7 @@ Point_allClones: NOP
     LOAD 6 -- clone
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -351,7 +447,7 @@ Point_allClones: NOP
     LOAD 6 -- clone
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 8 -- Method
+    LOAD 9 -- Method
     CALL
     POPN 1 -- cleanup args
     POPN 1 -- cleanup stack
@@ -366,14 +462,14 @@ Point_egal: NOP
     PUSHL -2 -- p
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 0 -- Method
+    LOAD 1 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHN 1 -- alloc return value
     PUSHL -1 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 0 -- Method
+    LOAD 1 -- Method
     CALL
     POPN 1 -- cleanup args
     SUB
@@ -382,7 +478,7 @@ Point_egal: NOP
     PUSHL -2 -- p
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 1 -- Method
+    LOAD 2 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHL -1 -- this
@@ -390,7 +486,7 @@ Point_egal: NOP
     SUB
     STOREL 1 -- b2
     PUSHI 0
-    STOREL -2 -- result
+    STOREL -3 -- result
     PUSHL 0 -- b1
     JZ lbl__7__else7
     JUMP lbl__8__endif8
@@ -398,7 +494,7 @@ lbl__7__else7: NOP
     PUSHL 1 -- b2
     PUSHI 0
     EQUAL
-    STOREL -2 -- result
+    STOREL -3 -- result
 lbl__8__endif8: NOP
     POPN 2 -- De-alloc space for local vars
     RETURN
@@ -454,7 +550,7 @@ lbl__14__endif14: NOP
     EQUAL
     JZ lbl__15__else15
     PUSHS "Blanc"
-    STOREL -2 -- result
+    STOREL -3 -- result
     JUMP lbl__16__endif16
 lbl__15__else15: NOP
     PUSHN 1 -- Alloc space for local vars
@@ -473,7 +569,7 @@ lbl__15__else15: NOP
 lbl__17__else17: NOP
 lbl__18__endif18: NOP
     PUSHL 0 -- aux
-    STOREL -2 -- result
+    STOREL -3 -- result
     POPN 1 -- De-alloc space for local vars
 lbl__16__endif16: NOP
     POPN 1 -- De-alloc space for local vars
@@ -490,7 +586,7 @@ Couleur_estGris: NOP
     LOAD 1 -- coul
     PUSHI 2
     EQUAL
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 CouleurFactory__constructor: NOP
@@ -523,24 +619,24 @@ CouleurFactory__constructor: NOP
     STORE 3 -- gris
     RETURN
 
-CouleurFactory_blanc: PUSHL -1
+CouleurFactory_blanc: PUSHG 3
     LOAD 1
-    STOREL -2
+    STOREL -1
     RETURN
 
-CouleurFactory_noir: PUSHL -1
+CouleurFactory_noir: PUSHG 3
     LOAD 2
-    STOREL -2
+    STOREL -1
     RETURN
 
-CouleurFactory_gris: PUSHL -1
+CouleurFactory_gris: PUSHG 3
     LOAD 3
-    STOREL -2
+    STOREL -1
     RETURN
 
 PointColore__constructor: NOP
     PUSHL -4 -- ptr
-    PUSHL -1 -- xc
+    PUSHL -3 -- xc
     PUSHL -2 -- yc
     PUSHA Point__constructor
     CALL
@@ -565,14 +661,14 @@ PointColore__constructor: NOP
     PUSHL -4 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 3 -- Method
+    LOAD 4 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
     RETURN
 
 PointColore_couleur: PUSHL -1
-    LOAD 1
+    LOAD 7
     STOREL -2
     RETURN
 
@@ -582,17 +678,17 @@ PointColore_colore: NOP
     LOAD 7 -- couleur
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 1 -- Method
+    LOAD 2 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 0
     EQUAL
     NOT
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 PointColore_clone: NOP
-    ALLOC 2
+    ALLOC 8
     PUSHL -1 -- this
     LOAD 1 -- x
     PUSHL -1 -- this
@@ -602,7 +698,7 @@ PointColore_clone: NOP
     PUSHA PointColore__constructor
     CALL
     POPN 3 -- cleanup args
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 PointColore_estGris: NOP
@@ -611,10 +707,10 @@ PointColore_estGris: NOP
     LOAD 7 -- couleur
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 1 -- Method
+    LOAD 2 -- Method
     CALL
     POPN 1 -- cleanup args
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 PointColore_print: NOP
@@ -630,18 +726,28 @@ PointColore_print: NOP
 lbl__19__else19: NOP
 lbl__20__endif20: NOP
     PUSHN 1 -- alloc return value
+    PUSHL -2 -- verbose
+    PUSHL -1 -- super
+    DUPN 1 -- this
+    LOAD 0 -- VTable
+    LOAD 0 -- super VTable
+    LOAD 7 -- Method
+    CALL
+    POPN 2 -- cleanup args
+    POPN 1 -- cleanup stack
+    PUSHN 1 -- alloc return value
     PUSHN 1 -- alloc return value
     PUSHI 1
     PUSHN 1 -- alloc return value
     PUSHL -1 -- this
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 10 -- Method
+    LOAD 11 -- Method
     CALL
     POPN 1 -- cleanup args
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 0 -- Method
+    LOAD 1 -- Method
     CALL
     POPN 2 -- cleanup args
     PUSHA String_println
@@ -652,8 +758,8 @@ lbl__20__endif20: NOP
 
 PointNoir__constructor: NOP
     PUSHL -3 -- ptr
-    PUSHL -1 -- xc
-    PUSHL -2 -- yc
+    PUSHL -2 -- xc
+    PUSHL -1 -- yc
     PUSHN 1 -- alloc return value
     PUSHA CouleurFactory_noir
     CALL
@@ -668,19 +774,19 @@ PointNoir__constructor: NOP
 
 PointNoir_estGris: NOP
     PUSHI 0
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 PointNoir_colore: NOP
     PUSHI 1
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 PointNoir_couleur: NOP
     PUSHN 1 -- alloc return value
     PUSHA CouleurFactory_noir
     CALL
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 DefaultPoint__constructor: NOP
@@ -701,14 +807,14 @@ DefaultPoint__constructor: NOP
 
 DefaultPoint_estGris: NOP
     PUSHI 0
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 DefaultPoint_couleur: NOP
     PUSHN 1 -- alloc return value
     PUSHA CouleurFactory_blanc
     CALL
-    STOREL -1 -- result
+    STOREL -2 -- result
     RETURN
 
 Test__constructor: NOP
@@ -722,24 +828,6 @@ Test_test: NOP
     PUSHI 1
     STOREL 3 -- true
     PUSHN 1 -- alloc return value
-    PUSHL 3 -- true
-    PUSHL -3 -- p
-    DUPN 1 -- this
-    LOAD 0 -- VTable
-    LOAD 6 -- Method
-    CALL
-    POPN 2 -- cleanup args
-    POPN 1 -- cleanup stack
-    PUSHN 1 -- alloc return value
-    PUSHL 3 -- true
-    PUSHL -2 -- p2
-    DUPN 1 -- this
-    LOAD 0 -- VTable
-    LOAD 6 -- Method
-    CALL
-    POPN 2 -- cleanup args
-    POPN 1 -- cleanup stack
-    PUSHN 1 -- alloc return value
     PUSHS "Appel 1: "
     PUSHA String_println
     CALL
@@ -749,7 +837,7 @@ Test_test: NOP
     PUSHL -2 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 11 -- Method
+    LOAD 12 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 0
@@ -773,7 +861,7 @@ lbl__22__endif22: NOP
     PUSHL -1 -- p3
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 11 -- Method
+    LOAD 12 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 0
@@ -797,7 +885,7 @@ lbl__24__endif24: NOP
     PUSHL -1 -- p3
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 11 -- Method
+    LOAD 12 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 0
@@ -864,15 +952,15 @@ Test_test2: NOP
     PUSHL -1 -- p
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 10 -- Method
+    LOAD 11 -- Method
     CALL
     POPN 1 -- cleanup args
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 0 -- Method
+    LOAD 1 -- Method
     CALL
     POPN 2 -- cleanup args
-    PUSHA String_print
+    PUSHA String_println
     CALL
     POPN 1 -- cleanup args
     POPN 1 -- cleanup stack
@@ -913,7 +1001,7 @@ start: NOP
     STOREL 10 -- p3
     PUSHI 12
     STOREL 15 -- fv
-    ALLOC 2
+    ALLOC 8
     PUSHI 0
     PUSHI 0
     PUSHN 1 -- alloc return value
@@ -923,7 +1011,7 @@ start: NOP
     CALL
     POPN 3 -- cleanup args
     STOREL 16 -- o
-    ALLOC 1
+    ALLOC 8
     PUSHI 1
     PUSHI 1
     PUSHI -1
@@ -932,7 +1020,7 @@ start: NOP
     CALL
     POPN 2 -- cleanup args
     STOREL 17 -- pn
-    ALLOC 1
+    ALLOC 8
     PUSHA DefaultPoint__constructor
     CALL
     STOREL 18 -- dp
@@ -941,7 +1029,7 @@ start: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -950,18 +1038,11 @@ start: NOP
     PUSHL 9 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
     PUSHN 1 -- alloc return value
-    PUSHN 1 -- alloc return value
-    PUSHL 8 -- p1
-    DUPN 1 -- this
-    LOAD 0 -- VTable
-    LOAD 0 -- Method
-    CALL
-    POPN 1 -- cleanup args
     PUSHN 1 -- alloc return value
     PUSHL 8 -- p1
     DUPN 1 -- this
@@ -969,11 +1050,18 @@ start: NOP
     LOAD 1 -- Method
     CALL
     POPN 1 -- cleanup args
+    PUSHN 1 -- alloc return value
+    PUSHL 8 -- p1
+    DUPN 1 -- this
+    LOAD 0 -- VTable
+    LOAD 2 -- Method
+    CALL
+    POPN 1 -- cleanup args
     PUSHI 0
     PUSHL 9 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 5 -- Method
+    LOAD 6 -- Method
     CALL
     POPN 4 -- cleanup args
     POPN 1 -- cleanup stack
@@ -982,7 +1070,7 @@ start: NOP
     PUSHL 9 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -991,7 +1079,7 @@ start: NOP
     PUSHL 16 -- o
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1000,7 +1088,7 @@ start: NOP
     PUSHL 16 -- o
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 3 -- Method
+    LOAD 4 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1009,7 +1097,7 @@ start: NOP
     PUSHL 16 -- o
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1018,7 +1106,7 @@ start: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 0 -- Method
+    LOAD 1 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 2
@@ -1031,14 +1119,14 @@ start: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 1 -- Method
+    LOAD 2 -- Method
     CALL
     POPN 1 -- cleanup args
     PUSHI 0
     PUSHL 9 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 5 -- Method
+    LOAD 6 -- Method
     CALL
     POPN 4 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1047,7 +1135,7 @@ start: NOP
     PUSHL 9 -- p2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1061,7 +1149,7 @@ start: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 7 -- Method
+    LOAD 8 -- Method
     CALL
     POPN 1 -- cleanup args
     STOREL 11 -- clone1
@@ -1070,7 +1158,7 @@ start: NOP
     PUSHL 11 -- clone1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1084,7 +1172,7 @@ start: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 4 -- Method
+    LOAD 5 -- Method
     CALL
     POPN 1 -- cleanup args
     JZ lbl__27__else27
@@ -1107,7 +1195,7 @@ lbl__28__endif28: NOP
     PUSHL 11 -- clone1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 7 -- Method
+    LOAD 8 -- Method
     CALL
     POPN 1 -- cleanup args
     STOREL 12 -- clone2
@@ -1120,12 +1208,12 @@ lbl__28__endif28: NOP
     PUSHL 12 -- clone2
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 5 -- Method
+    LOAD 6 -- Method
     CALL
     POPN 4 -- cleanup args
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1139,7 +1227,7 @@ lbl__28__endif28: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 8 -- Method
+    LOAD 9 -- Method
     CALL
     POPN 1 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1177,12 +1265,12 @@ lbl__28__endif28: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 7 -- Method
+    LOAD 8 -- Method
     CALL
     POPN 1 -- cleanup args
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 5 -- Method
+    LOAD 6 -- Method
     CALL
     POPN 4 -- cleanup args
     STOREL 8 -- p1
@@ -1191,7 +1279,7 @@ lbl__28__endif28: NOP
     PUSHL 8 -- p1
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack
@@ -1201,12 +1289,12 @@ lbl__28__endif28: NOP
     PUSHL 16 -- o
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 7 -- Method
+    LOAD 8 -- Method
     CALL
     POPN 1 -- cleanup args
     DUPN 1 -- this
     LOAD 0 -- VTable
-    LOAD 6 -- Method
+    LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
     POPN 1 -- cleanup stack

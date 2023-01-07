@@ -1,12 +1,8 @@
 open Ast
 
 (*
-    TODO:
-     - super
-     - subclass can have shadowing fields
-     - can't create subclass (& instance) of Integer/String
+    MAYBE:
      - redo object calls ?
-     - access can be done on 'this', 'super', or a cast of either one
 
     -> in codegen.ml : generate VTable correctly, maybe add super VTable ptr for supercall
 *)
@@ -55,10 +51,13 @@ let rec compatibleClass (classe : classVerifType option) (name : string) : bool 
 let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : classVerifType option =
     match v with
     | Id(var) -> let var_ : variable option = findVar var.name variables in (* get variable *)
-       ( match var_ with | None -> raise (VC_Error (Printf.sprintf "Undefined variable : %s" var.name)) (* check if variable exists *)
+        ( match var_ with | None -> raise (VC_Error (Printf.sprintf "Undefined variable : %s" var.name)) (* check if variable exists *)
         | Some v -> var.off <- v.offset; Some v.typeVar (* annotate AST and return type of variable *) )
     | Method(call) ->
-        let typ_ : classVerifType option = verifExpr call.left classes objects variables in (* get type of left expression *)
+        (* Special case for 'super' *)
+        let typ_ : classVerifType option = match call.left with Val(Id(var)) -> if var.name = "super" then (call.supercall <- true; var.off <- (getVar "this" variables).offset; Some (getVar "this" variables).typeVar)
+        else verifExpr call.left classes objects variables
+        | _ -> verifExpr call.left classes objects variables in (* get type of left expression *)
         begin match typ_ with
         | None ->
             let obj : objectVerifType = getObject call.objectName objects in
@@ -82,18 +81,22 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
     | Access(acc) ->
         let var_ : variable option = findVar "this" variables in (* you can only access this *)
         let var : variable = (match var_ with | None -> raise (VC_Error "Couldn't find variable 'this' in context") | Some v -> v) in
-        let this : Ast.valueTypeId = match acc.left with Val(Id(v)) -> if v.name <> "this" then raise (VC_Error (Printf.sprintf "Variable %s can't be accessed" v.name)) else v | _ -> raise (VC_Error (Printf.sprintf "This is not a variable" )) in
+        let (this,typ_) : Ast.valueTypeId * classVerifType option =
+          match acc.left with
+          | Val(Id(v)) -> if v.name = "this" then (v, Some var.typeVar) else if v.name = "super" then (v, var.typeVar.parent) else raise (VC_Error (Printf.sprintf "Variable %s can't be accessed" v.name))
+          | _ -> raise (VC_Error (Printf.sprintf "This is not a variable" )) in
         this.off <- var.offset; (* annotate AST left *)
+        let typ = match typ_ with None -> raise (VC_Error "type none ...") | Some t -> t in
         (* check if this is object - *)
-        if var.typeVar.name = "_object_" then begin
+        if typ.name = "_object_" then begin
             let obj : objectVerifType = !globalCurrentObj in
             let field_ : variable option = findVar acc.name obj.champs in
             let field : variable = (match field_ with | None -> raise (VC_Error (Printf.sprintf "Couldn't find field %s in object %s" acc.name obj.name)) | Some v -> v) in
             acc.off <- field.offset;
             Some field.typeVar
         end else begin
-            let field_ : variable option = findVar acc.name var.typeVar.champs in
-            let field : variable = (match field_ with | None -> raise (VC_Error (Printf.sprintf "Couldn't find field %s in class %s" acc.name var.typeVar.name)) | Some v -> v) in
+            let field_ : variable option = findVar acc.name typ.champs in
+            let field : variable = (match field_ with | None -> raise (VC_Error (Printf.sprintf "Couldn't find field %s in class %s" acc.name typ.name)) | Some v -> v) in
             acc.off <- field.offset;
             Some field.typeVar
         end
@@ -128,6 +131,7 @@ and verifExpr (e : Ast.expType) (classes : classVerifType list) (objects : objec
     | Inst(n, a) ->
         let classe_ : classVerifType option = findClass n classes in (* Check class n exists *)
         let classe : classVerifType = (match classe_ with | None -> raise (VC_Error (Printf.sprintf "Couldn't find class %s for instantiation" n)) | Some c -> c) in
+        (if classe.name = "String" || classe.name = "Integer" then raise (VC_Error (Printf.sprintf "Can't instanciate class %s" classe.name)));
         (if (List.length classe.constructeur.parametre) <> (List.length a) then raise (VC_Error (Printf.sprintf "Constructor of class %s takes %d parameters (got %d)" n (List.length classe.constructeur.parametre) (List.length a))) else ()); (* verif parameters *)
         List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if not (compatibleClass (verifExpr carg classes objects variables) marg.typeVar.name)
                                                                 then raise (VC_Error (Printf.sprintf "Wrong type argument for constructor of class %s" n))) a classe.constructeur.parametre;
@@ -226,12 +230,12 @@ let verifMethodBody (m : Ast.methodType) (classes : classVerifType list) (object
         Printf.fprintf stderr "In verifMethodBody(Body) %s\n" name;
         (match retType with (* check bloc, add variable for return *)
         | None -> verifBloc bloc classes objects params
-        | Some t -> verifBloc bloc classes objects ({name = "result"; typeVar = getClass t classes; offset = L(-(List.length params))} :: params))
+        | Some t -> verifBloc bloc classes objects ({name = "result"; typeVar = getClass t classes; offset = L(-(List.length params)-(if thiscall then 1 else 0))} :: params))
 
 let verifField (f : Ast.fieldType) (cl : classVerifType) (classes : classVerifType list): unit =
     match f with (a, n, t) ->
         let classe = if t = cl.name then cl else getClass t (cl::classes) in
-        (if (List.exists (fun (x : variable) -> x.name = n) cl.champs) || (List.exists (fun (x : classmethod) -> x.name = n) cl.methode) then raise (VC_Error "duplicate field") else ());
+        (* TODO: check fields among only current class added fields : (if List.exists (fun (x : variable) -> x.name = n) cl.champs then raise (VC_Error "duplicate field") else ());*)
         (if a then (cl.methode <- {name = n; returnType = Some classe; parametre = []; offset = !globalMethodOff} :: cl.methode; globalMethodOff := !globalMethodOff + 1) else ());
         cl.champs <- {name = n; typeVar = classe; offset = O(!globalFieldOff)} :: cl.champs;
         globalFieldOff := !globalFieldOff + 1
@@ -263,9 +267,10 @@ let verifObject (ob : Ast.classType) (classes : classVerifType list) (objects : 
 
 let verifParent (classe : classVerifType) (extends : Ast.extendType) (classes : classVerifType list) (objects: objectVerifType list) (params : Ast.paramType list) : unit =
     let parent = getClass (fst extends) classes in
+    (if parent.name = "Integer" || parent.name = "String" then raise (VC_Error (Printf.sprintf "%s can't be a subclass of %s" classe.name parent.name)));
     classe.parent <- Some parent;
     let i : int ref = ref 0 in
-    let variables = (List.fold_left (fun acc x -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (classe::classes); offset = L(!i)}::acc ) [{name = "this"; typeVar = !globalCurrentClass; offset = L(-(List.length params))}] params) in
+    let variables = (List.fold_right (fun x acc -> i := !i - 1; {name = (fst x); typeVar = getClass (snd x) (classe::classes); offset = L(!i)}::acc ) params [{name = "this"; typeVar = !globalCurrentClass; offset = L(-(List.length params))}]) in
     (if (List.length parent.constructeur.parametre) <> (List.length (snd extends))
     then raise (VC_Error (Printf.sprintf "%s : constructor of superclass %s takes %d parameters (got %d)" classe.name parent.name (List.length parent.constructeur.parametre) (List.length (snd extends)))));
     List.iter2 (fun (carg : Ast.expType) (marg : variable) -> if optClassName (verifExpr carg classes objects variables) <> marg.typeVar.name then raise (VC_Error "Non matching constructor (arg)")) (snd extends) parent.constructeur.parametre;

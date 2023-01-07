@@ -20,6 +20,13 @@ class Point(xc: Integer, yc: Integer) {
     }
 }
 
+class Point2(xc : Integer, yc : Integer, z : Integer) extends Point(xc,yc) { xc.toString().println(); } is {
+    def override print() is {
+        ("Point2 {x: " & this.x.toString() & ", y: " & this.y.toString() & "}").println();
+        super.print();
+    }
+}
+
 object Printer { this.string := "Hello, World!"; this.pt := new Point(3+3, 4/2+8); } is {
     var string : String;
     var pt : Point;
@@ -38,4 +45,6 @@ object Printer { this.string := "Hello, World!"; this.pt := new Point(3+3, 4/2+8
     x := Printer.getPoint();
     x.callMethod2();
     x.method2(100);
+    x := new Point2(1,2,3);
+    x.print();
 }

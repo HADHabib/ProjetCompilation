@@ -4,13 +4,27 @@ let globalProg: progType ref = ref ([], ([],[]))
 
 let getClass name = List.find (fun c -> match c with (_,n,_,_,_,_) -> n = name) (fst !globalProg)
 
-let getClassSize name =
-    let cl = getClass name in match cl with (_,_,_,_,_,i) -> List.length (fst i) + 1
+let getClassId name = let i = ref (-1) in let j = ref (-1) in List.iter (fun c -> i := !i + 1; if (match c with (_,n,_,_,_,_) -> n = name) then j := !i) (fst !globalProg); !j
+
+let rec getClassSize name =
+    let cl = getClass name in match cl with (_,_,_,e,_,i) ->
+    match e with None -> List.length (fst i) + 1
+    | Some (s,_) -> (getClassSize s) + (List.length (fst i))
 
 let genGet off name =
   (match off with | O(i) -> Printf.printf "    LOAD %d -- %s\n" i name | G(i) -> Printf.printf "    PUSHG %d -- %s\n" i name | L(i) -> Printf.printf "    PUSHL %d -- %s\n" i name)
 let genStore off name =
   (match off with | O(i) -> Printf.printf "    SWAP\n    STORE %d -- %s\n" i name | G(i) -> Printf.printf "    STOREG %d -- %s\n" i name | L(i) -> Printf.printf "    STOREL %d -- %s\n" i name)
+
+let rec getActualFieldOffset cl fname =
+    let i = ref (-1) in let j = ref (-1) in
+    match getClass cl with (_,_,_,e,_,inner) ->
+        match e with None ->
+            List.iter (fun f -> i := !i + 1; if (match f with (_,n,_) -> n = fname) then j := !i) (fst inner); !j+1
+        | Some ex -> let parSiz = getClassSize (fst ex) in
+            List.iter (fun f -> i := !i + 1; if (match f with (_,n,_) -> n = fname) then j := !i) (fst inner);
+            if (!j = -1) then getActualFieldOffset (fst ex) fname else !j + parSiz
+
 
 let rec genGetVal v =
     match v with
@@ -48,7 +62,9 @@ and genThisCall m =
     Printf.printf "    PUSHN 1 -- alloc return value\n";
     List.iter genExpr m.args;
     genExpr m.left;
-    Printf.printf "    DUPN 1 -- this\n    LOAD 0 -- VTable\n    LOAD %d -- Method\n    CALL\n    POPN %d -- cleanup args\n" m.vTableId (List.length m.args + 1)
+    Printf.printf "    DUPN 1 -- this\n    LOAD 0 -- VTable\n";
+    (if m.supercall then Printf.printf "    LOAD 0 -- super VTable\n");
+    Printf.printf "    LOAD %d -- Method\n    CALL\n    POPN %d -- cleanup args\n" (m.vTableId+1) (List.length m.args + 1)
 
 let genStoreVal v =
     match v with
@@ -83,12 +99,12 @@ and genBloc b =
 let globalClassName = ref ""
 let globalClassId = ref 0
 
-let genMethod m =
+let genMethod m thiscall =
     match m with
     | Calc(_, name, a, _, e) ->
         Printf.printf "%s_%s: NOP\n" !globalClassName name;
         genExpr e;
-        Printf.printf "    STOREL %d -- result\n    RETURN\n\n" (-(List.length a)-1)
+        Printf.printf "    STOREL %d -- result\n    RETURN\n\n" (-(List.length a)-(if thiscall then 2 else 1))
     | Body(_, name, _, _, b) ->
         Printf.printf "%s_%s: NOP\n" !globalClassName name;
         genBloc b;
@@ -113,32 +129,51 @@ let genConstructor n a b p =
 
 
 
-let genGetter c f =
-    let cl = getClass c in
-    let off = let i = ref 0 in let j = ref 0 in match cl with (_,_,_,_,_,inn) -> List.iter (fun fi -> match fi with (_,n,_) -> (if n=f then i := !j else ()); j := !j+1) (fst inn); !i in
-    Printf.printf "%s_%s: PUSHL -1\n    LOAD %d\n    STOREL -2\n    RETURN\n\n" c f (off+1)
+let genGetter c f objNum =
+    Printf.printf "%s_%s: " c f;
+    (if objNum = -1 then Printf.printf "PUSHL -1\n" else Printf.printf "PUSHG %d\n" objNum);
+    (*let cl = getClass c in*)
+    let off = getActualFieldOffset c f in (*let i = ref 0 in let j = ref 0 in match cl with (_,_,_,_,_,inn) -> List.iter (fun fi -> match fi with (_,n,_) -> (if n=f then i := !j else ()); j := !j+1) (fst inn); !i in*)
+    Printf.printf "    LOAD %d\n    STOREL %d\n    RETURN\n\n" off (if objNum = -1 then -2 else -1)
 
-let getVtableSize inner =
-    let i = ref 0 in
-    List.iter (fun f -> match f with (a, _, _) -> if a then i := !i + 1) (fst inner);
-    !i + (List.length (snd inner))
+type vtable = (string * string) list
+
+let rec fillVtable (name : string) ext inner : vtable =
+    match ext with None ->
+        (* Getters *)
+        (List.fold_right (fun (x : Ast.fieldType) (acc : vtable) -> match x with (a,n,_) -> if a then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (fst inner) []) @
+        (* Methods *)
+        (List.fold_right (fun (x : Ast.methodType) (acc : vtable) -> match x with
+          | Calc(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
+          | Body(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc) (snd inner) [])
+    | Some e -> match getClass (fst e) with (_, supername, _, superext, _, superinner) ->
+        let vTable = fillVtable supername superext superinner in
+        let vTable2 = (List.fold_right (fun x acc ->
+            match (List.find_opt (fun m -> match m with Calc(_,n,_,_,_) -> n = (fst x) | Body(_,n,_,_,_) -> n = (fst x)) (snd inner))
+            with None -> x::acc | Some m -> match m with
+            | Calc(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
+            | Body(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
+        ) vTable []) in
+        vTable2 @ (List.fold_right (fun (x : Ast.fieldType) (acc : vtable) -> match x with (a,n,_) -> if a then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (fst inner) []) @
+        (List.fold_right (fun (x : Ast.methodType) (acc : vtable) -> match x with
+          | Calc(o,n,_,_,_) -> if not o then (n, Printf.sprintf "%s_%s" name n)::acc else acc
+          | Body(o,n,_,_,_) -> if not o then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (snd inner) [])
+
+
+let genVtable (vt : vtable) (ext : Ast.extendType option) : unit =
+    Printf.printf "    PUSHN 1\n    ALLOC %d\n" (List.length vt + 1);
+    (match ext with None -> () | Some e -> Printf.printf "    DUPN 1\n    PUSHG %d\n    STORE 0\n" (getClassId (fst e)));
+    let i = ref 1 in
+    List.iter (fun f -> Printf.printf "    DUPN 1\n    PUSHA %s\n    STORE %d\n" (snd f) !i; i := !i + 1) vt;
+    Printf.printf "    STOREG %d\n" !globalClassId
 
 let preGenClass cl =
-    match cl with (obj, name, _, _, _, inner) -> begin
+    match cl with (obj, name, _, ext, _, inner) -> begin
         if obj then begin (* construct static instance *)
             Printf.printf "    PUSHN 1\n    ALLOC %d\n" (getClassSize name); genStaticCall (name ^ "__constructor") [] false;
             Printf.printf "    STOREG %d\n" !globalClassId;
         end else begin (* create VTable *)
-
-            Printf.printf "    PUSHN 1\n    ALLOC %d\n" (getVtableSize inner);
-            (* TODO: getters in VTable + redefinitions*)
-            let i = ref 0 in
-            List.iter (fun f -> match f with (a, n, _) -> if a then (Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i; i := !i + 1)) (fst inner);
-            List.iter (fun m -> (match m with
-                                              | Calc(_, n, _, _, _) -> Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i
-                                              | Body(_, n, _, _, _) -> Printf.printf "    DUPN 1\n    PUSHA %s_%s\n    STORE %d\n" name n !i);
-                                              i := !i + 1) (snd inner);
-            Printf.printf "    STOREG %d\n" !globalClassId;
+            genVtable (fillVtable name ext inner) ext;
         end
     end;
     globalClassId := !globalClassId + 1
@@ -152,11 +187,12 @@ let genStatic prog =
     Printf.printf "String_println: PUSHL -1\n    PUSHS \"\\n\"\n    CONCAT\n    WRITES\n    RETURN\n\n"
 
 let genClass cl =
-    match cl with (_,n,a,p,c,i) ->
+    match cl with (o,n,a,p,c,i) ->
         globalClassName := n;
         genConstructor n a c p;
-        List.iter (fun field -> match field with (auto, fieldname, _) -> if auto then genGetter n fieldname else ()) (fst i);
-        List.iter genMethod (snd i);
+        let objId = if o then !globalClassId else -1 in
+        List.iter (fun field -> match field with (auto, fieldname, _) -> if auto then genGetter n fieldname objId else ()) (fst i);
+        List.iter (fun m -> genMethod m (not o)) (snd i);
         globalClassId := !globalClassId + 1
 
 let genProg prog =
