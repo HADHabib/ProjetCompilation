@@ -728,9 +728,7 @@ lbl__20__endif20: NOP
     PUSHN 1 -- alloc return value
     PUSHL -2 -- verbose
     PUSHL -1 -- super
-    DUPN 1 -- this
-    LOAD 0 -- VTable
-    LOAD 0 -- super VTable
+    PUSHG 1 -- super VTable
     LOAD 7 -- Method
     CALL
     POPN 2 -- cleanup args
@@ -827,6 +825,24 @@ Test_test: NOP
     PUSHN 4 -- Alloc space for local vars
     PUSHI 1
     STOREL 3 -- true
+    PUSHN 1 -- alloc return value
+    PUSHL 3 -- true
+    PUSHL -3 -- p
+    DUPN 1 -- this
+    LOAD 0 -- VTable
+    LOAD 7 -- Method
+    CALL
+    POPN 2 -- cleanup args
+    POPN 1 -- cleanup stack
+    PUSHN 1 -- alloc return value
+    PUSHL 3 -- true
+    PUSHL -2 -- p2
+    DUPN 1 -- this
+    LOAD 0 -- VTable
+    LOAD 7 -- Method
+    CALL
+    POPN 2 -- cleanup args
+    POPN 1 -- cleanup stack
     PUSHN 1 -- alloc return value
     PUSHS "Appel 1: "
     PUSHA String_println

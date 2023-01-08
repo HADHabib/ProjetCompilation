@@ -161,8 +161,8 @@ object Test is {
       true: Integer;
       is
       true := 1;
-      //p.print(true); // TODO : doesn't work for PointNoir because of super
-      //p2.print(true);
+      p.print(true);
+      p2.print(true);
       "Appel 1: ".println();
       if p2.colore() <> 0 then c := "colore";  else c := "gris";
       "Appel 2: ".println();

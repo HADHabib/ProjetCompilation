@@ -199,9 +199,7 @@ Point2_print: NOP
     POPN 1 -- cleanup stack
     PUSHN 1 -- alloc return value
     PUSHL -1 -- super
-    DUPN 1 -- this
-    LOAD 0 -- VTable
-    LOAD 0 -- super VTable
+    PUSHG 0 -- super VTable
     LOAD 3 -- Method
     CALL
     POPN 1 -- cleanup args

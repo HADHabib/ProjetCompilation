@@ -3,26 +3,24 @@ open Ast
 (*
     MAYBE:
      - redo object calls ?
-
-    -> in codegen.ml : generate VTable correctly, maybe add super VTable ptr for supercall
 *)
 
 
 
-type classVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod; mutable parent : classVerifType option}
+type classVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod; mutable parent : classVerifType option; mutable id : int}
 and variable = {name : string; typeVar : classVerifType; mutable offset : Ast.offset}
 and classmethod = {name : string; returnType : classVerifType option; mutable parametre : variable list; mutable offset : int }
 type objectVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod}
 
 (* builtin classes and methods *)
-let classInteger : classVerifType = {name = "Integer"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None}
-let classString : classVerifType = {name = "String"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None}
+let classInteger : classVerifType = {name = "Integer"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None; id = -1}
+let classString : classVerifType = {name = "String"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None; id = -1}
 let integer_toString : classmethod = {name = "toString" ; returnType = Some classString ; parametre = []; offset = -1}
 let string_print : classmethod = {name = "print"; returnType = None; parametre = []; offset = -1}
 let string_println : classmethod = {name = "println"; returnType = None; parametre = []; offset = -1}
 
 (* helper class and object *)
-let classOBJECTCALL : classVerifType = {name = "_object_"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None} (* Should be used for objects *)
+let classOBJECTCALL : classVerifType = {name = "_object_"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None; id = -1} (* Should be used for objects *)
 let objEmpty : objectVerifType = {name = "_empty_"; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1};} (* Should never be used *)
 
 let globalBlocOff : int ref = ref (-1)
@@ -31,6 +29,7 @@ let globalMethodOff : int ref = ref 0
 let globalCurrentClass : classVerifType ref = ref classOBJECTCALL
 let globalCurrentObj : objectVerifType ref = ref objEmpty
 let globalClassId : int ref = ref 0
+
 
 (* helper functions *)
 let findClass  (name : string) (classes   : classVerifType  list) : classVerifType  option = List.find_opt (fun (a : classVerifType ) -> name = a.name) classes
@@ -44,6 +43,7 @@ let getVar    (name : string) (variables : variable        list) : variable     
 let getMethod (name : string) (methodes  : classmethod     list) : classmethod     = (match findMethod name methodes  with | None -> raise (VC_Error (Printf.sprintf "method not found : %s"   name)) | Some t -> t)
 
 let optClassName (cl : classVerifType option) : string = match cl with None -> "Void" | Some c -> c.name
+let optClassID   (cl : classVerifType option) :    int = match cl with None ->     -1 | Some c -> c.id
 
 let rec compatibleClass (classe : classVerifType option) (name : string) : bool = match classe with None -> false | Some c -> if c.name = name then true else compatibleClass c.parent name
 
@@ -55,7 +55,7 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
         | Some v -> var.off <- v.offset; Some v.typeVar (* annotate AST and return type of variable *) )
     | Method(call) ->
         (* Special case for 'super' *)
-        let typ_ : classVerifType option = match call.left with Val(Id(var)) -> if var.name = "super" then (call.supercall <- true; var.off <- (getVar "this" variables).offset; Some (getVar "this" variables).typeVar)
+        let typ_ : classVerifType option = match call.left with Val(Id(var)) -> if var.name = "super" then (call.supercall <- optClassID (getVar "this" variables).typeVar.parent; var.off <- (getVar "this" variables).offset; Some (getVar "this" variables).typeVar)
         else verifExpr call.left classes objects variables
         | _ -> verifExpr call.left classes objects variables in (* get type of left expression *)
         begin match typ_ with
@@ -285,7 +285,7 @@ let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : o
     (match findObject name objects with Some _ -> raise (VC_Error (Printf.sprintf "duplicate class %s" name)) | _ -> ());
     if obj then verifObject cl classes objects else begin
         Printf.fprintf stderr "In verifClass %s\n" name;
-        let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None} in
+        let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None; id = !globalClassId} in
         globalCurrentClass := newclass;
         (match ext with None -> () | Some e -> verifParent newclass e classes objects args);
         List.iter (fun f -> verifField f newclass classes) (fst inner);

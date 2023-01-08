@@ -1046,7 +1046,7 @@ let _menhir_action_68 =
     in
     (
 # 91 "tpParse.mly"
-                                                                                             ( Method({left = e;         name = f; args = args; vTableId =  0; objectName = ""; pushLeft = true ; supercall = false}) )
+                                                                                             ( Method({left = e;         name = f; args = args; vTableId =  0; objectName = ""; pushLeft = true ; supercall = -1}) )
 # 1051 "tpParse.ml"
      : (Ast.valueType))
 
@@ -1066,7 +1066,7 @@ let _menhir_action_69 =
     in
     (
 # 92 "tpParse.mly"
-                                                                                             ( Method({left = EmptyExpr; name = f; args = args; vTableId = -1; objectName =  o; pushLeft = false; supercall = false}) )
+                                                                                             ( Method({left = EmptyExpr; name = f; args = args; vTableId = -1; objectName =  o; pushLeft = false; supercall = -1}) )
 # 1071 "tpParse.ml"
      : (Ast.valueType))
 

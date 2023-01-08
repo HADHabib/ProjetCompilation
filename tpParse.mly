@@ -88,8 +88,8 @@ valueFst: i = ID { Id({name = i; off = O(0)}) }
 
 value: v = valueFst { v }
      | e = expr DOT i = ID { Access({left = e; name = i; off = O(0)}) }
-     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)     { Method({left = e;         name = f; args = args; vTableId =  0; objectName = ""; pushLeft = true ; supercall = false}) }
-     | o = TYPENAME DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Method({left = EmptyExpr; name = f; args = args; vTableId = -1; objectName =  o; pushLeft = false; supercall = false}) }
+     | e = expr DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN)     { Method({left = e;         name = f; args = args; vTableId =  0; objectName = ""; pushLeft = true ; supercall = -1}) }
+     | o = TYPENAME DOT f = ID args = delimited(LPAREN, separated_list(COMMA, expr), RPAREN) { Method({left = EmptyExpr; name = f; args = args; vTableId = -1; objectName =  o; pushLeft = false; supercall = -1}) }
 
 expr: v = value                       { Val(v) }
     | e1 = expr PLUS  e2 = expr       { Plus (e1, e2) }

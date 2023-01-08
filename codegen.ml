@@ -62,8 +62,7 @@ and genThisCall m =
     Printf.printf "    PUSHN 1 -- alloc return value\n";
     List.iter genExpr m.args;
     genExpr m.left;
-    Printf.printf "    DUPN 1 -- this\n    LOAD 0 -- VTable\n";
-    (if m.supercall then Printf.printf "    LOAD 0 -- super VTable\n");
+    (if m.supercall > -1 then Printf.printf "    PUSHG %d -- super VTable\n" m.supercall else Printf.printf "    DUPN 1 -- this\n    LOAD 0 -- VTable\n");
     Printf.printf "    LOAD %d -- Method\n    CALL\n    POPN %d -- cleanup args\n" (m.vTableId+1) (List.length m.args + 1)
 
 let genStoreVal v =
