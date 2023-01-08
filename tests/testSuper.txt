@@ -1,15 +1,9 @@
-class Base() { this.x := 1; } is {
-    var x : Integer;
-    def getX() : Integer := this.x
+class Base() is {
     def a() is { "Base::A".println(); }
     def b() is { "Base::B".println(); }
 }
 
-class D1() extends Base() { this.x := 2; } is {
-    var x : Integer;
-    def getMyX() : Integer := this.x
-    def getSuperX() : Integer := super.x
-    def getCastX() : Integer := (Base this).x
+class D1() extends Base() is {
     def override a() is { "D1::A".println(); super.a(); super.b(); }
     def override b() is { "D1::B".println(); super.a(); super.b(); }
 }
@@ -37,8 +31,4 @@ class D3() extends D2() is {
     "".println();
     d3.a();
     d3.b();
-
-    b.getX().toString().println();
-    (new D1()).getMyX().toString().println();
-    (new D1()).getSuperX().toString().println();
 }

@@ -73,12 +73,12 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
             methode.returnType (* return type of return value *)
         end
     | Access(acc) ->
-        (* TODO: forgot to check for a cast *)
         let var_ : variable option = findVar "this" variables in (* you can only access this *)
         let var : variable = (match var_ with | None -> raise (VC_Error "Couldn't find variable 'this' in context") | Some v -> v) in
         let (this,typ_) : Ast.valueTypeId * classVerifType option =
           match acc.left with
           | Val(Id(v)) -> if v.name = "this" then (v, Some var.typeVar) else if v.name = "super" then (v, var.typeVar.parent) else raise (VC_Error (Printf.sprintf "Variable %s can't be accessed" v.name))
+          | Cast(t, Val(Id(v))) -> if (v.name = "this" || v.name = "super") && compatibleClass (Some var.typeVar) t then (v, Some (getClass t classes)) else raise (VC_Error (Printf.sprintf "Variable %s can't be accessed" v.name))
           | _ -> raise (VC_Error (Printf.sprintf "This is not a variable" )) in
         this.off <- var.offset; (* annotate AST left *)
         let typ = match typ_ with None -> raise (VC_Error "type none ...") | Some t -> t in
