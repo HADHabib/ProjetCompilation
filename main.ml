@@ -22,7 +22,7 @@ let parse_with_error lexbuf file_in chan =
      * La valeur retournée par la production qui définit l'axiome renvoie une
      * valeur du type progType à définir dans ast.ml.
      *)
-    let ast = TpParse.prog TpLex.token lexbuf in
+    let ast = Parser.prog Lexer.token lexbuf in
     Printf.printf "Fin de l'analyse syntaxique\n";
     Context.verifProg ast;
     Printf.printf "Fin de l'analyse contextuelle\n";
@@ -30,7 +30,7 @@ let parse_with_error lexbuf file_in chan =
     Codegen.genProg ast chan;
     Printf.printf "Fin de la compilation\n";
   with (* traite exception général ... *)
-    TpParse.Error -> (* levée par l'analyseur syntaxique *)
+    Parser.Error -> (* levée par l'analyseur syntaxique *)
     Printf.fprintf stderr "Syntax error at position %a\n" print_position lexbuf;
     exit (-1)
   | VC_Error msg ->

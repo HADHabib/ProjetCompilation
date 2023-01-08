@@ -1,20 +1,20 @@
-INTERFACES = tpParse.mli
-SOURCES    = ast.ml tpParse.ml tpLex.ml misc.ml context.ml codegen.ml main.ml
-GENERATED  = tpLex.ml tpParse.ml tpParse.mli tpParse.automaton tpParse.conflicts
+INTERFACES = parser.mli
+SOURCES    = ast.ml parser.ml lexer.ml misc.ml context.ml codegen.ml main.ml
+GENERATED  = lexer.ml parser.ml parser.mli parser.automaton parser.conflicts
 
-tp: tpParse.mli $(SOURCES)
+compile: parser.mli $(SOURCES)
 	ocamlc -g -c ast.ml
 	ocamlc -g $(INTERFACES)
-	ocamlc -g -o tp $(SOURCES)
+	ocamlc -g -o compile $(SOURCES)
 
 ast.mli: ast.ml
 	ocamlc -g -c ast.ml
 
-tpLex.ml: tpLex.mll tpParse.mli ast.ml
-	ocamllex tpLex.mll
+lexer.ml: lexer.mll parser.mli ast.ml
+	ocamllex lexer.mll
 
-tpParse.mli : tpParse.mly ast.mli
-	menhir --dump --explain --infer tpParse.mly
+parser.mli : parser.mly ast.mli
+	menhir --dump --explain --infer parser.mly
 
 clean:
-	rm -rf tp *.o *.cmi *.cmo *.cmx *~ $(GENERATED) out.txt
+	rm -rf compile *.o *.cmi *.cmo *.cmx *~ $(GENERATED) out.txt

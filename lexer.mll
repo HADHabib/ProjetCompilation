@@ -1,6 +1,6 @@
 {
 open Ast
-open TpParse
+open Parser
 open Lexing
 exception Eof
 
