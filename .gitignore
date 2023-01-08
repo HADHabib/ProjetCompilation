@@ -1,0 +1,12 @@
+tp
+*.o
+*.cmi
+*.cmo
+*.cmx
+*.as
+tpLex.ml
+tpParse.ml
+tpParse.mli
+tpParse.automaton
+tpParse.conflicts
+*.class

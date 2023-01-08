@@ -23,12 +23,12 @@ let parse_with_error lexbuf file_in chan =
      * valeur du type progType à définir dans ast.ml.
      *)
     let ast = TpParse.prog TpLex.token lexbuf in
-    Printf.fprintf stderr "Fin de l'analyse syntaxique\n";
+    Printf.printf "Fin de l'analyse syntaxique\n";
     Context.verifProg ast;
-    Printf.fprintf stderr "Fin de l'analyse contextuelle\n";
+    Printf.printf "Fin de l'analyse contextuelle\n";
     (**Ast.printAST ast;*)
-    Codegen.genProg ast;
-    Printf.fprintf stderr "Fin de la compilation\n";
+    Codegen.genProg ast chan;
+    Printf.printf "Fin de la compilation\n";
   with (* traite exception général ... *)
     TpParse.Error -> (* levée par l'analyseur syntaxique *)
     Printf.fprintf stderr "Syntax error at position %a\n" print_position lexbuf;
@@ -46,13 +46,13 @@ let parse_with_error lexbuf file_in chan =
 let _ =
   let argc = Array.length Sys.argv in
   if argc = 1 then
-    print_endline "usage: tp programme [fichier-pour-le-code] "
+    print_endline "usage: tp <inputFile> [-o outputFile] "
   else
     begin
       (* si on ne passe pas à l'appel le nom du fichier dans lequel
        * ecrire le code produit, on utilise par défaut le fichier "out.txt"
        *)
-      let file_out = if argc = 3 then Sys.argv.(2) else "out.txt"
+      let file_out = if argc = 4 then Sys.argv.(3) else "out.as"
       and file_in = Sys.argv.(1) in
       let chan_in = open_in file_in
       and chan_out = open_out file_out in

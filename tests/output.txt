@@ -1,0 +1,89 @@
+Debut du programme
+Point_1= (1, 5)
+Point_2= (2, 3)
+Point_2= (3, 8)
+PC_4= (0, 0)
+Inside Couleur::couleur
+Blanc
+Inside PointColore::print
+Inside Point::print
+origine= (0, 0)
+Inside Couleur::couleur
+Blanc
+Inside Point::print
+Point_2= (-9, 13)
+On va essayer le clonage:
+Point_1'= (1, 5)
+p1 isCloned: OK
+Point_1''= (55, 41)
+Impression de tous les clones de p1:
+Inside Point::print
+Point_1'= (1, 5)
+Inside Point::print
+Point_1''= (55, 41)
+Fin de l'impression de tous les clones
+Valeur du compteur de nombre de points: 
+8
+Inside Point::print
+Point_1'= (3, 2)
+Inside PointColore::print
+Inside Point::print
+PC_10= (0, 0)
+Inside Couleur::couleur
+Blanc
+test(Point, PointColore, PointNoir)
+Inside Point::print
+Point_1'= (3, 2)
+Inside PointColore::print
+Inside Point::print
+origine= (0, 0)
+Inside Couleur::couleur
+Blanc
+Appel 1: 
+Inside Couleur::estGris
+Appel 2: 
+Appel 3: 
+Resultats de test: 
+gris colore colore
+test(PointNoir, PointNoir, PointNoir)
+Inside PointColore::print
+Inside Point::print
+PC_5= (1, -1)
+Inside Couleur::couleur
+Noir
+Inside PointColore::print
+Inside Point::print
+PC_5= (1, -1)
+Inside Couleur::couleur
+Noir
+Appel 1: 
+Appel 2: 
+Appel 3: 
+Resultats de test: 
+colore colore colore
+Inside Couleur::couleur
+Blanc
+Inside Couleur::couleur
+Noir
+test(PointNoir, PointNoir, PointNoir)
+Inside PointColore::print
+Inside Point::print
+PC_5= (1, -1)
+Inside Couleur::couleur
+Noir
+Inside PointColore::print
+Inside Point::print
+PC_5= (1, -1)
+Inside Couleur::couleur
+Noir
+Appel 1: 
+Appel 2: 
+Appel 3: 
+Resultats de test: 
+colore colore colore
+Inside Couleur::couleur
+Noir
+Inside Couleur::couleur
+Noir
+
+Done

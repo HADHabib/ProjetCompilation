@@ -1,11 +1,5 @@
 open Ast
 
-(*
-    MAYBE:
-     - redo object calls ?
-*)
-
-
 
 type classVerifType = {name : string; mutable champs : variable list; mutable methode : classmethod list; mutable constructeur : classmethod; mutable parent : classVerifType option; mutable id : int}
 and variable = {name : string; typeVar : classVerifType; mutable offset : Ast.offset}
@@ -79,6 +73,7 @@ let rec verifValue (v : Ast.valueType) (classes : classVerifType list) (objects 
             methode.returnType (* return type of return value *)
         end
     | Access(acc) ->
+        (* TODO: forgot to check for a cast *)
         let var_ : variable option = findVar "this" variables in (* you can only access this *)
         let var : variable = (match var_ with | None -> raise (VC_Error "Couldn't find variable 'this' in context") | Some v -> v) in
         let (this,typ_) : Ast.valueTypeId * classVerifType option =
@@ -157,7 +152,7 @@ let rec verifInstr (i : Ast.instrType) (classes : classVerifType list) (objects 
     | Assign(lv, e) -> verifStore lv e classes objects variables
     | Ite(e, i1, i2) -> if (optClassName (verifExpr e classes objects variables) <> "Integer") then raise (VC_Error "Expression in if statement should return an integer") else (verifInstr i1 classes objects variables; verifInstr i2 classes objects variables)
 and verifBloc (b : Ast.blocType) (classes : classVerifType list) (objects : objectVerifType list) (variables : variable list) : unit =
-    Printf.fprintf stderr "Enter verifBloc\n";
+    Printf.printf "Enter verifBloc\n";
     (match (fst b) with
      | [] -> List.iter (fun (x : Ast.instrType) -> verifInstr x classes objects variables) (snd b)
      | l ->
@@ -224,10 +219,10 @@ let verifMethodBody (m : Ast.methodType) (classes : classVerifType list) (object
     let params = if thiscall then {name = "this"; typeVar = !globalCurrentClass; offset = L(-1)} :: variables else variables in
     match m with
     | Calc(override, name, _, retType, expr) ->
-        Printf.fprintf stderr "In verifMethodBody(Calc) %s\n" name;
+        Printf.printf "In verifMethodBody(Calc) %s\n" name;
         if not (compatibleClass (verifExpr expr classes objects params) retType) then raise (VC_Error "Return type don't match") else () (* check expr and compare return type *)
     | Body(override, name, _, retType, bloc) ->
-        Printf.fprintf stderr "In verifMethodBody(Body) %s\n" name;
+        Printf.printf "In verifMethodBody(Body) %s\n" name;
         (match retType with (* check bloc, add variable for return *)
         | None -> verifBloc bloc classes objects params
         | Some t -> verifBloc bloc classes objects ({name = "result"; typeVar = getClass t classes; offset = L(-(List.length params)-(if thiscall then 1 else 0))} :: params))
@@ -254,7 +249,7 @@ let methodName (m : Ast.methodType) : string =
 let verifObject (ob : Ast.classType) (classes : classVerifType list) (objects : objectVerifType list) : classVerifType list * objectVerifType list =
     match ob with (_, name, _, _, bl, inner) ->
     let newobj : objectVerifType = {name = name; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1};} in
-    Printf.fprintf stderr "In verifObject %s\n" name;
+    Printf.printf "In verifObject %s\n" name;
     globalCurrentObj := newobj;
     globalCurrentClass := classOBJECTCALL;
     List.iter (fun f -> verifFieldObj f newobj classes) (fst inner);
@@ -284,7 +279,7 @@ let verifClass (cl : Ast.classType) (classes : classVerifType list) (objects : o
     (match findClass name classes with Some _ -> raise (VC_Error (Printf.sprintf "duplicate class %s" name)) | _ -> ());
     (match findObject name objects with Some _ -> raise (VC_Error (Printf.sprintf "duplicate class %s" name)) | _ -> ());
     if obj then verifObject cl classes objects else begin
-        Printf.fprintf stderr "In verifClass %s\n" name;
+        Printf.printf "In verifClass %s\n" name;
         let newclass : classVerifType = {name = name; champs = []; methode = []; constructeur = {name = "_constructor_"; returnType = None; parametre = []; offset = -1}; parent = None; id = !globalClassId} in
         globalCurrentClass := newclass;
         (match ext with None -> () | Some e -> verifParent newclass e classes objects args);
