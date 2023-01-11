@@ -1,0 +1,42 @@
+class Card (name: String) 
+    {
+        this.name := name;
+    }
+    is
+    {
+        var name: String;
+        def print() is { this.name.println(); }
+    }
+class SorceryCard(name: String, cost : Integer) extends Card(name)
+    {
+        this.cost := cost;
+    }
+    is
+    {
+        var cost: Integer;
+        def override print() is { super.print(); "Cost: ".print(); this.cost.toString().println(); }
+    }
+class CreatureCard(name: String, attack : Integer, defence : Integer) extends Card(name)
+    {
+        this.attack := attack;
+        this.defence := defence;
+    }
+    is
+    {
+        var attack : Integer; 
+        var defence : Integer;
+        def override print() is { super.print(); 
+                                  "Attack: ".print(); this.attack.toString().println();
+                                  "Defence: ".print(); this.defence.toString().println();
+                                }
+    }
+
+
+{
+    c1: Card;
+    is
+    c1 := new SorceryCard("Lightning Bolt", 2);
+    c1.print();
+    c1 := new CreatureCard("Bird of Paradise", 0, 2);
+    c1.print();
+}
