@@ -36,11 +36,11 @@ let majuscule = ['A'-'Z']
 let lettre = (minuscule | majuscule)
 let chiffre = ['0'-'9']
 let chiffreHex = (chiffre | ['A'-'F' 'a'-'f'])
-let LC = ( chiffre | lettre )
-let escapesequence = ('\\' ['\\' '"' 'n' 't' 'b' 'r' ' ']
+let LC = ( lettre | chiffre ) (* lettre ou chiffre *)
+let escapesequence = ('\\' ['\\' '"' 'n' 't' 'b' 'r' ' '] 
                    | '\\' chiffre chiffre chiffre
                    | "\\x" chiffreHex chiffreHex
-                   | "\\o" ['0'-'3'] ['0'-'7'] ['0'-'7'])
+                   | "\\o" ['0'-'3'] ['0'-'7'] ['0'-'7']) 
 let stringchar = (escapesequence | [^ '\\' '"'])
 
 (* l'analyseur lexical est decomposé ici en deux fonctions: l'une qui est

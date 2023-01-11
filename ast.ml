@@ -6,6 +6,7 @@ type offset = | O of int | L of int | G of int
 type valueTypeMethod = {left: expType; name: string; args: expType list; mutable vTableId: int; mutable objectName: string; mutable pushLeft: bool; mutable supercall: int}
 and valueTypeAccess = {left: expType; name: string; mutable off: offset}
 and valueTypeId = {name: string; mutable off: offset}
+
 and valueType =
   Id of valueTypeId
 | Method of valueTypeMethod
@@ -33,22 +34,22 @@ type instrType =
 | Bloc of blocType
 | Return
 | Assign of valueType * expType
-| Ite of expType * instrType * instrType
+| Ite of expType * instrType * instrType  (* if then else *)
 and blocType = (declType list) * (instrType list)
 
-type paramType = string * string
+type paramType = string * string   (*a : Integer*)
 
 type methodType =
   Calc of bool * string * (paramType list) * string * expType
 | Body of bool * string * (paramType list) * string option * blocType
 
-type fieldType = bool * string * string
+type fieldType = bool * string * string  
 
 type classInType = (fieldType list) * (methodType list)
 
 type extendType = string * (expType list)
 
-type classType = bool * string * (paramType list) * (extendType option) * (blocType option) * classInType
+type classType = bool * string * (paramType list) * (extendType option) * (blocType option) * classInType (* boolean to differentiate classe and object*)
 
 type progType = (classType list) * blocType
 
@@ -62,7 +63,7 @@ let rec printList l pm =
   | [] -> ()
   | x :: r -> pm x; printList r pm
 
-let printAST ast =
+let printASTprintAST ast =
   let rec printVal v =
     match v with
     | Id(var) -> Printf.printf "%s" var.name

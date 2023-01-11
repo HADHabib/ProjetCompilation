@@ -1,0 +1,64 @@
+class Base() {
+    this.base := 0;
+    this.d1 := "Base";
+} is {
+    var auto base : Integer;
+    var auto d1 : String;
+
+    def a() is { "Base::A".println(); }
+    def b() is { "Base::B".println(); }
+}
+
+class D1() extends Base(){
+    this.base := 1;
+    this.d1 := "D1";
+} is {
+    var base : Integer;
+    var d1 : String;
+
+    def override a() is { "D1::A".println(); super.a(); super.b(); }
+    def override b() is { "D1::B".println(); super.a(); super.b(); }
+}
+class D2() extends D1() {
+    this.base := 2;
+    this.d1 := "D2";
+}is {
+    var auto base : Integer;
+    var auto d1 : String;
+    def override b() is { "D2::B".println(); super.a(); super.b(); }
+}
+class D3() extends D2(){
+    this.base := 3;
+    this.d1 := "D3";
+} is {
+    var auto base : Integer;
+    var auto d1 : String;
+    def override a() is { "D3::A".println(); super.a(); super.b(); }
+}
+
+{
+    b, d1, d2, d3 : Base; is
+    b := new Base();
+    d1 := new D1();
+    d2 := new D2();
+    d3 := new D3();
+
+    b.base().toString().println();
+    b.d1().println();
+
+    d1.base().toString().println();
+    d1.d1().println();
+
+    d2.base().toString().println();
+    d2.d1().println();
+
+    d3.base().toString().println();
+    d3.d1().println();
+
+
+
+
+
+
+    
+}

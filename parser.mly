@@ -85,6 +85,7 @@ instr: e = expr SEMICOLON { Expr(e) }
 valueFst: i = ID { Id({name = i; off = O(0)}) }
         | c = CSTE   { Cste(c) }
         | s = STRING { Str (s) }
+        
 
 value: v = valueFst { v }
      | e = expr DOT i = ID { Access({left = e; name = i; off = O(0)}) }

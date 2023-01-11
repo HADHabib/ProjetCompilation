@@ -1,0 +1,10 @@
+
+{
+    texte:String;
+    is
+    texte := " test texte ";
+    texte.println();
+    texte.print();
+    "test".println();
+    (texte&"test").println();
+}

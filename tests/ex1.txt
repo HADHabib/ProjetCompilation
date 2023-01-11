@@ -1,4 +1,4 @@
-object CptPoint { this.next := 0; } is {
+object CptPoint { this.next := 0; } is { 
   var next : Integer;
   def get() : Integer := this.next
   def incr() : Integer is { this.next := this.next + 1; result := this.next; }
@@ -226,6 +226,7 @@ object Test is {
 
   "Valeur du compteur de nombre de points: ".println();
   // ERROR x1 : Point.get().toString().println();
+  
   CptPoint.get().toString().println();
 
   p1 := p1.clone().move(+2, -3, 0);

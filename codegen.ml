@@ -155,7 +155,11 @@ let rec fillVtable (name : string) ext inner : vtable =
             | Calc(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
             | Body(_,n,_,_,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
         ) vTable []) in
-        vTable2 @ (List.fold_right (fun (x : Ast.fieldType) (acc : vtable) -> match x with (a,n,_) -> if a then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (fst inner) []) @
+        let vTable3 = (List.fold_right (fun x acc ->
+            match (List.find_opt (fun f -> match f with (a,n,_) -> n = (fst x) && a) (fst inner))
+            with None -> x::acc | Some f -> match f with (_,n,_) -> (n, Printf.sprintf "%s_%s" name n)::acc
+        ) vTable2 []) in
+        vTable3 @ (List.fold_right (fun (x : Ast.fieldType) (acc : vtable) -> match x with (a,n,_) -> if a then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (fst inner) []) @
         (List.fold_right (fun (x : Ast.methodType) (acc : vtable) -> match x with
           | Calc(o,n,_,_,_) -> if not o then (n, Printf.sprintf "%s_%s" name n)::acc else acc
           | Body(o,n,_,_,_) -> if not o then (n, Printf.sprintf "%s_%s" name n)::acc else acc) (snd inner) [])

@@ -1,0 +1,26 @@
+{
+    x : Integer;
+    x2 : Integer; is
+
+    x := 3;
+    x2 := 2;
+
+    (x * x2).toString().println();
+    (x + x2).toString().println();
+    (x / x2).toString().println();
+    (x - x2).toString().println();
+    (x = x2).toString().println();
+    (x > x2).toString().println();
+    (x < x2).toString().println();
+    (x <> x2).toString().println();
+    (x >= x2).toString().println();
+    (x <= x2).toString().println();
+    (!(x <= x2)).toString().println();
+    (-x).toString().println();
+    
+
+    
+
+    
+
+}
